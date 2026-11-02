@@ -14,25 +14,26 @@ const LISTA_INVITADOS: Familia[] = [
 ];
 
 const GOOGLE_SHEETS_SCRIPT_URL = "AQUI_TU_SCRIPT_URL";
-const AUDIO_URL = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3"; // O tu ruta local /veo-en-ti-la-luz.mp3
+const AUDIO_URL = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3"; 
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpening, setIsOpening] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Estados Asistencia
+  // Asistencia
   const [busqueda, setBusqueda] = useState('');
   const [familiaSeleccionada, setFamiliaSeleccionada] = useState<Familia | null>(null);
   const [asistentesConfirmados, setAsistentesConfirmados] = useState<number>(1);
   const [enviando, setEnviando] = useState(false);
   const [confirmadoExito, setConfirmadoExito] = useState(false);
 
-  // Estados Playlist
+  // Playlist
   const [cancionUrl, setCancionUrl] = useState('');
   const [playlistEnviada, setPlaylistEnviada] = useState(false);
 
-  // Contador 16 Enero 2027
+  // Contador
   const [timeLeft, setTimeLeft] = useState({ dias: 0, horas: 0, minutos: 0, segundos: 0 });
 
   useEffect(() => {
@@ -54,6 +55,28 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Animación Scroll Fade-In
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('opacity-100', 'translate-y-0');
+            entry.target.classList.remove('opacity-0', 'translate-y-10');
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const elements = document.querySelectorAll('.reveal');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [isOpen]);
+
   const toggleAudio = () => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -65,11 +88,14 @@ export default function App() {
     }
   };
 
-  const abrirInvitacion = () => {
-    setIsOpen(true);
+  const abrirCarta = () => {
+    setIsOpening(true);
     if (audioRef.current) {
       audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
     }
+    setTimeout(() => {
+      setIsOpen(true);
+    }, 1000);
   };
 
   const familiasFiltradas = busqueda.trim() === '' ? [] : LISTA_INVITADOS.filter(f => 
@@ -103,10 +129,54 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF6FF] text-[#3D2C4D] font-serif relative overflow-x-hidden select-none">
+    <div className="min-h-screen bg-[#2E1F47] text-[#3D2C4D] font-serif relative overflow-x-hidden select-none">
       <audio ref={audioRef} src={AUDIO_URL} loop />
 
-      {/* Rebotador / Control de Audio Flotante */}
+      {/* ESTILOS DE ANIMACIÓN DESTELLOS Y APERTURA DE SOBRE */}
+      <style>{`
+        @keyframes floatUp {
+          0% { transform: translateY(100vh) scale(0); opacity: 0; }
+          50% { opacity: 0.8; }
+          100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        }
+        .sparkle {
+          position: fixed;
+          bottom: 0;
+          pointer-events: none;
+          border-radius: 50%;
+          animation: floatUp linear infinite;
+          z-index: 40;
+        }
+        .envelope-flap {
+          transition: transform 0.8s ease-in-out;
+          transform-origin: top;
+        }
+        .open-flap {
+          transform: rotateX(180deg);
+          opacity: 0;
+        }
+      `}</style>
+
+      {/* DESTELLOS FLOTANTES EN TODA LA PÁGINA */}
+      <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
+        {[...Array(25)].map((_, i) => (
+          <div
+            key={i}
+            className="sparkle"
+            style={{
+              left: `${Math.random() * 100}%`,
+              width: `${Math.random() * 6 + 2}px`,
+              height: `${Math.random() * 6 + 2}px`,
+              backgroundColor: i % 2 === 0 ? '#E5C158' : '#D8B4FE',
+              boxShadow: i % 2 === 0 ? '0 0 8px #E5C158' : '0 0 8px #D8B4FE',
+              animationDuration: `${Math.random() * 5 + 4}s`,
+              animationDelay: `${Math.random() * 5}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* REPRODUCTOR FLOTANTE */}
       {isOpen && (
         <button
           onClick={toggleAudio}
@@ -124,41 +194,58 @@ export default function App() {
         </button>
       )}
 
-      {/* PORTADA (Pantalla Bienvenida con Fondo Linternas) */}
+      {/* SOBRE DE CARTA VERTICAL Y REAL */}
       {!isOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex flex-col items-center justify-between py-16 px-6 text-center bg-cover bg-center"
-          style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.75), rgba(30, 18, 48, 0.85)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000')` }}
-        >
-          <div className="flex flex-col items-center mt-10">
-            <span className="text-xs tracking-[0.3em] uppercase text-[#F3E5AB] mb-4">MIS XV AÑOS</span>
-            <h1 className="text-6xl text-[#E5C158] mb-4" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole</h1>
-            <p className="text-xs text-purple-100 italic max-w-xs font-sans">
-              "Una noche donde las linternas brillarán por ti"
-            </p>
-          </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1E1230]">
+          <div 
+            className={`relative w-full max-w-xs h-[480px] bg-[#4E3863] rounded-3xl shadow-2xl overflow-hidden border-2 border-[#E5C158]/60 transition-all duration-1000 flex flex-col justify-between ${
+              isOpening ? 'scale-125 opacity-0 translate-y-10' : 'scale-100'
+            }`}
+          >
+            {/* Solapa Superior del Sobre (Triangular) */}
+            <div 
+              className={`absolute top-0 left-0 right-0 h-48 bg-[#3B284C] border-b-2 border-[#E5C158]/40 envelope-flap z-20 ${
+                isOpening ? 'open-flap' : ''
+              }`}
+              style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)' }}
+            />
 
-          <div className="w-full max-w-xs flex flex-col items-center space-y-4">
-            <button
-              onClick={abrirInvitacion}
-              className="w-full py-3.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#2E1F47] font-semibold text-xs tracking-widest rounded-full shadow-lg uppercase"
-            >
-              ABRIR INVITACIÓN
-            </button>
-            <p className="text-[10px] text-purple-200/80 italic font-sans">
-              Al abrirla sonará «Veo en ti la luz», la canción de Rapunzel
-            </p>
+            {/* Contenido dentro del sobre */}
+            <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 text-center pt-24">
+              <span className="text-[10px] tracking-[0.3em] uppercase text-[#F3E5AB] mb-2 font-sans">MIS XV AÑOS</span>
+              <h1 className="text-6xl text-[#E5C158] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole</h1>
+              <p className="text-xs text-purple-200 italic mb-10 font-sans max-w-[220px]">
+                "Una noche donde las linternas brillarán por ti"
+              </p>
+
+              {/* SELLO DORADO DE RAPUNZEL */}
+              <div className="relative flex justify-center mt-2">
+                <button
+                  onClick={abrirCarta}
+                  className="w-20 h-20 rounded-full bg-gradient-to-tr from-[#D4AF37] via-[#F3E5AB] to-[#B8860B] shadow-2xl flex flex-col items-center justify-center border-4 border-[#2E1F47] hover:scale-105 active:scale-95 transition-transform group cursor-pointer"
+                >
+                  <svg className="w-8 h-8 text-[#2E1F47] mb-0.5 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L14.5 8.5L21 9.5L16.5 14L18 20.5L12 17L6 20.5L7.5 14L3 9.5L9.5 8.5L12 2Z"/>
+                  </svg>
+                  <span className="text-[8px] font-extrabold tracking-widest text-[#2E1F47] uppercase font-sans">ABRIR</span>
+                </button>
+              </div>
+
+              <p className="text-[10px] text-purple-200/70 italic font-sans mt-4">
+                Toca el sello dorado para abrir tu invitación
+              </p>
+            </div>
           </div>
         </div>
       )}
 
-      {/* CUERPO PRINCIPAL */}
-      <div className={`${!isOpen ? 'hidden' : 'block'}`}>
+      {/* CONTENIDO PRINCIPAL DE LA INVITACIÓN */}
+      <div className={`bg-[#FAF6FF] ${!isOpen ? 'hidden' : 'block'}`}>
 
-        {/* Cabecera Principal */}
+        {/* Cabecera */}
         <section 
-          className="py-20 px-6 text-center bg-cover bg-center relative text-white"
-          style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.8), rgba(46, 31, 71, 0.9)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000')` }}
+          className="py-24 px-6 text-center bg-cover bg-center relative text-white"
+          style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.8), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000')` }}
         >
           <p className="text-xs uppercase tracking-[0.25em] text-purple-200 mb-3 font-sans">Estás invitado a celebrar mis</p>
           <h2 className="text-7xl font-bold text-[#E5C158] tracking-widest my-1" style={{ fontFamily: "'Cinzel', serif" }}>XV</h2>
@@ -167,8 +254,8 @@ export default function App() {
           <h1 className="text-5xl text-[#E5C158]" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole Rivas</h1>
         </section>
 
-        {/* Texto Emotivo e Imagen Destacada */}
-        <section className="py-12 px-6 text-center max-w-md mx-auto">
+        {/* Texto Emotivo y Foto (Reveal Scroll) */}
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto">
           <p className="text-xs italic leading-relaxed text-[#5A456E] mb-6">
             Toda gran historia tiene una noche especial. Hoy llega el momento de abrir un nuevo capítulo en mi vida y celebrar mis quince años rodeada de las personas que han sido parte de mi camino.
           </p>
@@ -185,8 +272,8 @@ export default function App() {
           </div>
         </section>
 
-        {/* Fecha y Contador */}
-        <section className="py-12 px-6 text-center bg-[#F3ECF8]">
+        {/* Fecha y Contador (Reveal Scroll) */}
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center bg-[#F3ECF8]">
           <h3 className="text-4xl text-[#5A456E] mb-6" style={{ fontFamily: "'Alex Brush', cursive" }}>Enero</h3>
 
           <div className="flex justify-center space-x-3 text-xs mb-6 text-[#5A456E]">
@@ -205,7 +292,6 @@ export default function App() {
           <p className="text-2xl font-semibold text-[#5A456E] font-sans mb-2">07:00 PM</p>
           <p className="text-xs italic text-[#7A6282] mb-8">¡Llega puntual para que no te pierdas las sorpresas!</p>
 
-          {/* Tarjeta Contador estilo Princesa */}
           <div 
             className="rounded-3xl p-6 max-w-xs mx-auto shadow-xl text-white bg-cover bg-center"
             style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.9), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=500')` }}
@@ -227,8 +313,8 @@ export default function App() {
           </div>
         </section>
 
-        {/* Ubicación */}
-        <section className="py-14 px-6 text-center max-w-md mx-auto">
+        {/* Ubicación (Reveal Scroll) */}
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 text-center max-w-md mx-auto">
           <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Ubicación</h3>
           <div className="w-12 h-0.5 bg-[#E5C158] mx-auto mb-6"></div>
 
@@ -245,8 +331,8 @@ export default function App() {
           </a>
         </section>
 
-        {/* Galería */}
-        <section className="py-12 px-6 text-center max-w-md mx-auto">
+        {/* Galería (Reveal Scroll) */}
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto">
           <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Galería</h3>
           <div className="w-12 h-0.5 bg-[#E5C158] mx-auto mb-6"></div>
 
@@ -257,8 +343,8 @@ export default function App() {
           </div>
         </section>
 
-        {/* Dress Code */}
-        <section className="py-14 px-6 bg-[#F3ECF8]">
+        {/* Dress Code (Reveal Scroll) */}
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 bg-[#F3ECF8]">
           <div className="max-w-md mx-auto bg-white rounded-3xl p-6 shadow-sm border border-[#EADBEE] text-center">
             <h3 className="text-4xl text-[#5A456E] mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Dress code</h3>
             <p className="text-[10px] tracking-widest text-[#2E1F47] uppercase font-sans font-bold mb-4">SEMI-FORMAL</p>
@@ -278,8 +364,8 @@ export default function App() {
           </div>
         </section>
 
-        {/* Obsequios */}
-        <section className="py-14 px-6 text-center max-w-md mx-auto">
+        {/* Obsequios (Reveal Scroll) */}
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 text-center max-w-md mx-auto">
           <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Obsequios</h3>
           <p className="text-xs italic text-[#7A6282] mb-4 max-w-xs mx-auto">
             Mi mayor regalo será tu presencia. Sin embargo, si deseas obsequiarme algo más, una lluvia de sobres será siempre bienvenida.
@@ -287,8 +373,8 @@ export default function App() {
           <p className="text-[10px] tracking-widest font-bold text-[#3D2C4D] uppercase font-sans">LLUVIA DE SOBRES</p>
         </section>
 
-        {/* Asistencia */}
-        <section className="py-14 px-6 bg-[#F3ECF8]">
+        {/* Asistencia (Reveal Scroll) */}
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 bg-[#F3ECF8]">
           <div className="max-w-md mx-auto bg-white rounded-3xl p-6 shadow-md border border-[#EADBEE] text-center">
             <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Asistencia</h3>
 
@@ -354,8 +440,8 @@ export default function App() {
           </div>
         </section>
 
-        {/* Sugerir Canción */}
-        <section className="py-12 px-6 max-w-md mx-auto text-center">
+        {/* Playlist (Reveal Scroll) */}
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 max-w-md mx-auto text-center">
           <h3 className="text-4xl text-[#5A456E] mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Playlist</h3>
           <p className="text-xs italic text-[#7A6282] mb-4">¿Qué canción no debería faltar en la fiesta?</p>
           {!playlistEnviada ? (
