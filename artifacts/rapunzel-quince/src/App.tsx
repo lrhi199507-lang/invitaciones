@@ -1,163 +1,235 @@
-import { type ReactNode, useState } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ErrorBoundary } from '@/components/error-boundary';
-import { Toaster } from '@/components/ui/toaster';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import NotFound from '@/pages/not-found';
-import { CalendarDays, Clock3, Flower2, MapPin, Share2, Sparkles } from 'lucide-react';
-import {
-  Route,
-  Switch,
-  useLocation,
-  Router as WouterRouter,
-} from 'wouter';
+import React, { useState, useEffect } from 'react';
 
-const queryClient = new QueryClient();
+// Estructura de familias precargadas
+interface Familia {
+  id: string;
+  nombre: string;
+  maxCupos: number;
+}
 
-// Edit this single object to personalize the invitation. Replace each bracketed value.
-const INVITATION = {
-  celebrant: '[Nombre de la festejada]',
-  date: '[Día, mes y año]',
-  time: '[Hora de inicio]',
-  venue: '[Nombre del lugar]',
-  address: '[Dirección completa]',
-  contact: '[Contacto para confirmar asistencia]',
-};
+const LISTA_INVITADOS: Familia[] = [
+  { id: '1', nombre: 'Familia Hernández', maxCupos: 5 },
+  { id: '2', nombre: 'Familia Rodríguez', maxCupos: 2 },
+  { id: '3', nombre: 'Familia Pérez', maxCupos: 4 },
+  { id: '4', nombre: 'Familia García', maxCupos: 3 },
+];
 
-function Home() {
-  const [toast, setToast] = useState('');
+// URL de tu Google Apps Script para sincronizar con Google Sheets
+const GOOGLE_SHEETS_SCRIPT_URL = "AQUI_PONDREMOS_TU_LINK_DE_GOOGLE_APPS_SCRIPT";
 
-  async function shareInvitation() {
-    const shareText = `Te invito a celebrar los quince años de ${INVITATION.celebrant}. ${INVITATION.date} · ${INVITATION.time}.`;
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: `Quince años de ${INVITATION.celebrant}`, text: shareText, url: window.location.href });
-      } else if (navigator.clipboard) {
-        await navigator.clipboard.writeText(`${shareText} ${window.location.href}`);
-        setToast('Enlace de la invitación copiado');
-        window.setTimeout(() => setToast(''), 3000);
-      } else {
-        setToast('Copia el enlace desde la barra del navegador');
-        window.setTimeout(() => setToast(''), 3000);
+export default function App() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [busqueda, setBusqueda] = useState('');
+  const [familiaSeleccionada, setFamiliaSeleccionada] = useState<Familia | null>(null);
+  const [asistentesConfirmados, setAsistentesConfirmados] = useState<number>(1);
+  const [enviando, setEnviando] = useState(false);
+  const [confirmadoExito, setConfirmadoExito] = useState(false);
+
+  // Contador de tiempo para el 16 de enero de 2027
+  const [timeLeft, setTimeLeft] = useState({ dias: 0, horas: 0, minutos: 0, segundos: 0 });
+
+  useEffect(() => {
+    const targetDate = new Date('2027-01-16T20:00:00').getTime();
+
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference > 0) {
+        setTimeLeft({
+          dias: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          horas: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutos: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          segundos: Math.floor((difference % (1000 * 60)) / 1000),
+        });
       }
-    } catch {
-      // A dismissed native share sheet is not an error for the guest.
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Filtrar la lista por el texto ingresado
+  const familiasFiltradas = busqueda.trim() === '' ? [] : LISTA_INVITADOS.filter(f => 
+    f.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  );
+
+  const seleccionarFamilia = (fam: Familia) => {
+    setFamiliaSeleccionada(fam);
+    setAsistentesConfirmados(fam.maxCupos);
+  };
+
+  const enviarAsistencia = async () => {
+    if (!familiaSeleccionada) return;
+    setEnviando(true);
+
+    try {
+      if (GOOGLE_SHEETS_SCRIPT_URL !== "AQUI_PONDREMOS_TU_LINK_DE_GOOGLE_APPS_SCRIPT") {
+        await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            familia: familiaSeleccionada.nombre,
+            cuposMaximos: familiaSeleccionada.maxCupos,
+            asistentes: asistentesConfirmados,
+            fecha: new Date().toLocaleString()
+          })
+        });
+      }
+      setConfirmadoExito(true);
+    } catch (e) {
+      console.error(e);
+      alert("Error al guardar asistencia. Inténtalo de nuevo.");
+    } finally {
+      setEnviando(false);
     }
-  }
+  };
 
   return (
-    <main className="story-shell">
-      <section className="hero" aria-labelledby="hero-title">
-        <div className="hero-inner">
-          <div className="hero-kicker">Una invitación bajo las estrellas</div>
-          <h1 id="hero-title">Una noche <em>de cuento</em></h1>
-          <p className="hero-deck">Hay noches que parecen escritas en las estrellas. Nos encantaría que acompañaras a <strong>{INVITATION.celebrant}</strong> a celebrar sus quince años.</p>
-          <div className="hero-date"><span>{INVITATION.date}</span><span aria-hidden="true">·</span><span>{INVITATION.time}</span></div>
-          <div className="hero-actions">
-            <a className="pill-button" href="#detalles" data-testid="link-invitation-details">Descubrir la invitación <Sparkles size={15} aria-hidden="true" /></a>
-            <button className="pill-button outline" type="button" onClick={shareInvitation} data-testid="button-share-invitation"><Share2 size={15} aria-hidden="true" /> Compartir</button>
-          </div>
-        </div>
-        <a className="scroll-cue" href="#bienvenida" aria-label="Desplazarse a la invitación" data-testid="link-scroll-invitation">Sigue la luz</a>
-      </section>
+    <div className="min-h-screen bg-slate-950 text-amber-100 font-sans relative overflow-x-hidden">
 
-      <section className="chapter intro" id="bienvenida">
-        <div className="chapter-inner">
-          <div className="eyebrow">Una página nueva comienza</div>
-          <h2>Quince años, mil sueños<br />y una noche para recordar.</h2>
-          <p>Como una trenza que une historias, esta noche reúne a las personas que más queremos. Ven a celebrar el comienzo de un capítulo luminoso, rodeados de flores, faroles y mucho cariño.</p>
-          <div className="dedication">Con todo nuestro amor, te esperamos</div>
-          <div className="rule" aria-hidden="true" />
-        </div>
-      </section>
+      {/* 1. INTRO / PORTADA TIPO SOBRE */}
+      {!isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-purple-950/95 backdrop-blur-md">
+          <div className="w-full max-w-sm p-8 rounded-3xl bg-gradient-to-b from-purple-900 via-indigo-950 to-purple-950 border-2 border-amber-400/60 shadow-[0_0_50px_rgba(251,191,36,0.3)] text-center relative overflow-hidden">
+            <div className="text-5xl mb-4 animate-bounce">🏮</div>
+            <p className="text-amber-300 font-serif tracking-widest text-sm uppercase">Te invitamos a los</p>
+            <h1 className="text-4xl font-serif font-bold text-amber-200 my-2 tracking-wide">15 Años</h1>
+            <p className="text-2xl font-serif italic text-purple-200 mb-6">Inspirados en Rapunzel</p>
 
-      <section className="details-section" id="detalles" aria-labelledby="details-title">
-        <div className="chapter-inner details-layout">
-          <div className="detail-copy">
-            <div className="eyebrow">Guarda la fecha</div>
-            <h2 className="section-title" id="details-title">El comienzo<br />de la celebración.</h2>
-            <p>Una noche para brindar, bailar y llenar de recuerdos una historia que apenas empieza. Aquí encontrarás los detalles para acompañarnos.</p>
-          </div>
-          <div className="detail-list">
-            <div className="detail-row">
-              <div className="detail-icon"><CalendarDays size={21} strokeWidth={1.5} aria-hidden="true" /></div>
-              <div><div className="detail-label">La fecha</div><div className="detail-value">{INVITATION.date}</div><div className="detail-note">Edita este dato en el objeto INVITATION.</div></div>
-            </div>
-            <div className="detail-row">
-              <div className="detail-icon"><Clock3 size={21} strokeWidth={1.5} aria-hidden="true" /></div>
-              <div><div className="detail-label">La hora</div><div className="detail-value">{INVITATION.time}</div></div>
-            </div>
-            <div className="detail-row">
-              <div className="detail-icon"><Flower2 size={21} strokeWidth={1.5} aria-hidden="true" /></div>
-              <div><div className="detail-label">El lugar</div><div className="detail-value">{INVITATION.venue}</div><div className="detail-note">{INVITATION.address}</div></div>
-            </div>
-            <div className="detail-row">
-              <div className="detail-icon"><MapPin size={21} strokeWidth={1.5} aria-hidden="true" /></div>
-              <div><div className="detail-label">Cómo llegar</div><div className="detail-value">{INVITATION.address}</div><div className="detail-note">Sustituye por la dirección para compartirla con tus invitados.</div></div>
-            </div>
+            <button
+              onClick={() => setIsOpen(true)}
+              className="w-full py-4 px-6 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-purple-950 font-bold rounded-xl shadow-lg transform active:scale-95 transition-all text-lg tracking-wider"
+            >
+              Abrir Invitación ✨
+            </button>
           </div>
         </div>
-      </section>
+      )}
 
-      <section className="note-section">
-        <div className="note-card">
-          <div className="eyebrow">Una noche para brillar</div>
-          <h2>Tu presencia hará<br />más mágico el cuento.</h2>
-          <p>Prepara tus mejores pasos y ven con ganas de celebrar. Será una velada de abrazos, música y pequeños momentos que guardaremos para siempre.</p>
-        </div>
-      </section>
+      {/* 2. CONTENIDO PRINCIPAL */}
+      <div className={`transition-all duration-700 ${!isOpen ? 'filter blur-md pointer-events-none select-none' : ''}`}>
 
-      <section className="rsvp-section" id="asistencia" aria-labelledby="rsvp-title">
-        <div className="rsvp-inner">
-          <div>
-            <div className="eyebrow">Acompáñanos</div>
-            <h2 id="rsvp-title">¿Nos vemos bajo los faroles?</h2>
-            <p>Nos encantará saber si podrás venir. Para enviar tu respuesta hace falta configurar primero un teléfono o contacto real de la familia; esta invitación no envía confirmaciones todavía.</p>
+        {/* Cabecera Principal */}
+        <header className="py-16 text-center px-4 bg-gradient-to-b from-purple-950 via-purple-900 to-slate-950 border-b border-amber-500/20">
+          <p className="text-amber-400 text-sm tracking-widest uppercase mb-2">Mis XV Años</p>
+          <h1 className="text-5xl font-serif text-amber-200 tracking-wider mb-4">Rapunzel</h1>
+          <p className="max-w-md mx-auto text-purple-200 text-sm italic">
+            "Una noche mágica donde las linternas iluminarán nuevos sueños."
+          </p>
+        </header>
+
+        {/* Cuenta Regresiva */}
+        <section className="py-10 px-4 text-center">
+          <h2 className="text-xl font-serif text-amber-300 mb-6">El Gran Día en...</h2>
+          <div className="grid grid-cols-4 gap-2 max-w-xs mx-auto">
+            {[
+              { label: 'Días', val: timeLeft.dias },
+              { label: 'Horas', val: timeLeft.horas },
+              { label: 'Min', val: timeLeft.minutos },
+              { label: 'Seg', val: timeLeft.segundos },
+            ].map((item, idx) => (
+              <div key={idx} className="bg-purple-900/50 border border-amber-400/40 rounded-xl p-3 backdrop-blur-sm">
+                <span className="block text-2xl font-bold text-amber-200">{String(item.val).padStart(2, '0')}</span>
+                <span className="text-[10px] text-purple-300 uppercase">{item.label}</span>
+              </div>
+            ))}
           </div>
-          <div className="rsvp-action" role="note">
-            <strong>Confirmación pendiente</strong>
-            <span>Contacto por configurar:<br />{INVITATION.contact}</span>
+          <p className="mt-4 text-amber-200/80 font-serif">Sábado, 16 de Enero de 2027 — 8:00 PM</p>
+        </section>
+
+        {/* Módulo de Asistencia por Mesas */}
+        <section className="py-12 px-4 max-w-md mx-auto">
+          <div className="bg-purple-900/40 border border-amber-400/50 rounded-2xl p-6 backdrop-blur-sm shadow-xl">
+            <h2 className="text-2xl font-serif text-amber-300 text-center mb-2">Confirmación de Asistencia</h2>
+            <p className="text-xs text-purple-200 text-center mb-6">
+              Busca tu apellido para ubicar tu mesa decorada y marcar tus asistentes.
+            </p>
+
+            {!familiaSeleccionada ? (
+              <div>
+                <label className="block text-xs font-semibold text-amber-200 mb-2">Ingresa tu Apellido o Familia:</label>
+                <input
+                  type="text"
+                  placeholder="Ej. Hernández"
+                  value={busqueda}
+                  onChange={(e) => setBusqueda(e.target.value)}
+                  className="w-full p-3 rounded-xl bg-purple-950/80 border border-amber-400/30 text-amber-100 placeholder-purple-400 focus:outline-none focus:border-amber-400 text-sm mb-4"
+                />
+
+                {familiasFiltradas.length > 0 && (
+                  <div className="space-y-2">
+                    {familiasFiltradas.map((fam) => (
+                      <button
+                        key={fam.id}
+                        onClick={() => seleccionarFamilia(fam)}
+                        className="w-full text-left p-3 rounded-xl bg-purple-800/60 border border-amber-400/20 hover:bg-purple-700/60 transition-all flex justify-between items-center"
+                      >
+                        <span className="font-semibold text-amber-100">{fam.nombre}</span>
+                        <span className="text-xs text-amber-300 bg-purple-950/80 px-2 py-1 rounded-lg">
+                          Mesa reservada ({fam.maxCupos} p)
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : confirmadoExito ? (
+              <div className="text-center py-6">
+                <div className="text-4xl mb-2">👑</div>
+                <h3 className="text-xl font-bold text-amber-300 mb-1">¡Asistencia Confirmada!</h3>
+                <p className="text-sm text-purple-200">
+                  Registramos {asistentesConfirmados} lugar(es) para la <strong className="text-amber-200">{familiaSeleccionada.nombre}</strong>.
+                </p>
+              </div>
+            ) : (
+              <div>
+                <div className="p-4 rounded-xl bg-purple-950/70 border border-amber-400/30 mb-4 text-center">
+                  <p className="text-sm text-purple-300">Mesa Decorada de:</p>
+                  <h3 className="text-xl font-serif text-amber-200 font-bold">{familiaSeleccionada.nombre}</h3>
+                  <p className="text-xs text-amber-400/80 mt-1">Máximo disponible: {familiaSeleccionada.maxCupos} personas</p>
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-xs text-purple-200 text-center mb-2">¿Cuántos van a asistir?</label>
+                  <div className="flex items-center justify-center space-x-4">
+                    <button
+                      onClick={() => setAsistentesConfirmados(Math.max(1, asistentesConfirmados - 1))}
+                      className="w-10 h-10 rounded-xl bg-purple-800 border border-amber-400/40 text-amber-200 text-xl font-bold"
+                    >
+                      -
+                    </button>
+                    <span className="text-2xl font-bold text-amber-300 w-8 text-center">{asistentesConfirmados}</span>
+                    <button
+                      onClick={() => setAsistentesConfirmados(Math.min(familiaSeleccionada.maxCupos, asistentesConfirmados + 1))}
+                      className="w-10 h-10 rounded-xl bg-purple-800 border border-amber-400/40 text-amber-200 text-xl font-bold"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setFamiliaSeleccionada(null)}
+                    className="w-1/3 py-3 rounded-xl bg-purple-950 border border-purple-700 text-purple-300 text-xs font-semibold"
+                  >
+                    Cambiar
+                  </button>
+                  <button
+                    onClick={enviarAsistencia}
+                    disabled={enviando}
+                    className="w-2/3 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 text-purple-950 font-bold text-sm shadow-md disabled:opacity-50"
+                  >
+                    {enviando ? 'Guardando...' : 'Confirmar Llenado 👑'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      </section>
-      <footer className="footer">
-        <div className="footer-mark">{INVITATION.celebrant} · XV</div>
-        Una noche de cuento, hecha para compartir.
-      </footer>
-      {toast && <div className="toast-note" role="status" aria-live="polite">{toast}</div>}
-    </main>
+        </section>
+
+      </div>
+    </div>
   );
 }
-
-function Router() {
-  return (
-    // Keep a shared shell (sidebar, navbar) outside the boundary so it
-    // survives a page crash.
-    <RoutedErrorBoundary>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route component={NotFound} />
-      </Switch>
-    </RoutedErrorBoundary>
-  );
-}
-
-function RoutedErrorBoundary({ children }: { children: ReactNode }) {
-  const [location] = useLocation();
-  return <ErrorBoundary resetKey={location}>{children}</ErrorBoundary>;
-}
-
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
-}
-
-export default App;
