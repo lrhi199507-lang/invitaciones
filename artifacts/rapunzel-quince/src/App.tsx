@@ -1,17 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-
-interface Familia {
-  id: string;
-  nombre: string;
-  maxCupos: number;
-}
-
-const LISTA_INVITADOS: Familia[] = [
-  { id: '1', nombre: 'Familia Hernández', maxCupos: 5 },
-  { id: '2', nombre: 'Familia Rodríguez', maxCupos: 2 },
-  { id: '3', nombre: 'Familia Pérez', maxCupos: 4 },
-  { id: '4', nombre: 'Familia García', maxCupos: 3 },
-];
+import { LISTA_INVITADOS, Familia } from './data/invitados';
 
 const GOOGLE_SHEETS_SCRIPT_URL = "AQUI_TU_SCRIPT_URL";
 const AUDIO_URL = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3"; 
@@ -55,7 +43,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // Animación Scroll Fade-In
+  // Animación Scroll Reveal
   useEffect(() => {
     if (!isOpen) return;
 
@@ -68,7 +56,7 @@ export default function App() {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.15 }
     );
 
     const elements = document.querySelectorAll('.reveal');
@@ -88,14 +76,14 @@ export default function App() {
     }
   };
 
-  const abrirCarta = () => {
+  const abrirInvitacion = () => {
     setIsOpening(true);
     if (audioRef.current) {
       audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
     }
     setTimeout(() => {
       setIsOpen(true);
-    }, 1000);
+    }, 800);
   };
 
   const familiasFiltradas = busqueda.trim() === '' ? [] : LISTA_INVITADOS.filter(f => 
@@ -132,55 +120,51 @@ export default function App() {
     <div className="min-h-screen bg-[#2E1F47] text-[#3D2C4D] font-serif relative overflow-x-hidden select-none">
       <audio ref={audioRef} src={AUDIO_URL} loop />
 
-      {/* ESTILOS DE ANIMACIÓN DESTELLOS Y APERTURA DE SOBRE */}
+      {/* ANIMACIONES Y DESTELLOS CORRIDOS */}
       <style>{`
         @keyframes floatUp {
-          0% { transform: translateY(100vh) scale(0); opacity: 0; }
-          50% { opacity: 0.8; }
+          0% { transform: translateY(105vh) scale(0.3); opacity: 0; }
+          20% { opacity: 0.9; }
+          80% { opacity: 0.9; }
           100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
         }
-        .sparkle {
+        .sparkle-lantern {
           position: fixed;
-          bottom: 0;
           pointer-events: none;
           border-radius: 50%;
           animation: floatUp linear infinite;
           z-index: 40;
         }
-        .envelope-flap {
-          transition: transform 0.8s ease-in-out;
-          transform-origin: top;
-        }
-        .open-flap {
-          transform: rotateX(180deg);
-          opacity: 0;
-        }
       `}</style>
 
-      {/* DESTELLOS FLOTANTES EN TODA LA PÁGINA */}
+      {/* LINTERNAS Y DESTELLOS EN TODA LA PÁGINA */}
       <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
-        {[...Array(25)].map((_, i) => (
-          <div
-            key={i}
-            className="sparkle"
-            style={{
-              left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 6 + 2}px`,
-              height: `${Math.random() * 6 + 2}px`,
-              backgroundColor: i % 2 === 0 ? '#E5C158' : '#D8B4FE',
-              boxShadow: i % 2 === 0 ? '0 0 8px #E5C158' : '0 0 8px #D8B4FE',
-              animationDuration: `${Math.random() * 5 + 4}s`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
+        {[...Array(35)].map((_, i) => {
+          const size = Math.random() * 8 + 4;
+          return (
+            <div
+              key={i}
+              className="sparkle-lantern"
+              style={{
+                left: `${Math.random() * 100}%`,
+                width: `${size}px`,
+                height: `${size * 1.3}px`,
+                borderRadius: '30% 30% 40% 40%',
+                backgroundColor: i % 3 === 0 ? '#FFE082' : i % 3 === 1 ? '#F5B041' : '#E8DAEF',
+                boxShadow: i % 2 === 0 ? '0 0 12px #FFE082, 0 0 20px #F5B041' : '0 0 10px #E8DAEF',
+                animationDuration: `${Math.random() * 7 + 6}s`,
+                animationDelay: `${Math.random() * 6}s`,
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* REPRODUCTOR FLOTANTE */}
       {isOpen && (
         <button
           onClick={toggleAudio}
-          className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-[#3B284C] text-[#E5C158] flex items-center justify-center shadow-2xl border border-[#E5C158]/40"
+          className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-[#2E1F47]/90 text-[#E5C158] flex items-center justify-center shadow-2xl border border-[#E5C158]/50 backdrop-blur-sm"
         >
           {isPlaying ? (
             <span className="flex items-end space-x-0.5 h-4">
@@ -194,52 +178,39 @@ export default function App() {
         </button>
       )}
 
-      {/* SOBRE DE CARTA VERTICAL Y REAL */}
+      {/* PORTADA TORRE RAPUNZEL CON LINTERNAS */}
       {!isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1E1230]">
-          <div 
-            className={`relative w-full max-w-xs h-[480px] bg-[#4E3863] rounded-3xl shadow-2xl overflow-hidden border-2 border-[#E5C158]/60 transition-all duration-1000 flex flex-col justify-between ${
-              isOpening ? 'scale-125 opacity-0 translate-y-10' : 'scale-100'
-            }`}
-          >
-            {/* Solapa Superior del Sobre (Triangular) */}
-            <div 
-              className={`absolute top-0 left-0 right-0 h-48 bg-[#3B284C] border-b-2 border-[#E5C158]/40 envelope-flap z-20 ${
-                isOpening ? 'open-flap' : ''
-              }`}
-              style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)' }}
-            />
+        <div 
+          className={`fixed inset-0 z-50 flex flex-col items-center justify-between py-16 px-6 text-center bg-cover bg-center transition-all duration-1000 ${
+            isOpening ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
+          }`}
+          style={{ 
+            backgroundImage: `linear-gradient(to bottom, rgba(30, 18, 48, 0.65), rgba(20, 10, 35, 0.85)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000')` 
+          }}
+        >
+          <div className="flex flex-col items-center mt-8 z-10">
+            <span className="text-[11px] tracking-[0.35em] uppercase text-[#F3E5AB] mb-4 font-sans drop-shadow-md">MIS XV AÑOS</span>
+            <h1 className="text-7xl text-[#E5C158] mb-3 drop-shadow-lg" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole</h1>
+            <p className="text-xs text-purple-100 italic max-w-xs font-sans drop-shadow">
+              "Una noche donde las linternas brillarán por ti"
+            </p>
+          </div>
 
-            {/* Contenido dentro del sobre */}
-            <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 text-center pt-24">
-              <span className="text-[10px] tracking-[0.3em] uppercase text-[#F3E5AB] mb-2 font-sans">MIS XV AÑOS</span>
-              <h1 className="text-6xl text-[#E5C158] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole</h1>
-              <p className="text-xs text-purple-200 italic mb-10 font-sans max-w-[220px]">
-                "Una noche donde las linternas brillarán por ti"
-              </p>
-
-              {/* SELLO DORADO DE RAPUNZEL */}
-              <div className="relative flex justify-center mt-2">
-                <button
-                  onClick={abrirCarta}
-                  className="w-20 h-20 rounded-full bg-gradient-to-tr from-[#D4AF37] via-[#F3E5AB] to-[#B8860B] shadow-2xl flex flex-col items-center justify-center border-4 border-[#2E1F47] hover:scale-105 active:scale-95 transition-transform group cursor-pointer"
-                >
-                  <svg className="w-8 h-8 text-[#2E1F47] mb-0.5 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L14.5 8.5L21 9.5L16.5 14L18 20.5L12 17L6 20.5L7.5 14L3 9.5L9.5 8.5L12 2Z"/>
-                  </svg>
-                  <span className="text-[8px] font-extrabold tracking-widest text-[#2E1F47] uppercase font-sans">ABRIR</span>
-                </button>
-              </div>
-
-              <p className="text-[10px] text-purple-200/70 italic font-sans mt-4">
-                Toca el sello dorado para abrir tu invitación
-              </p>
-            </div>
+          <div className="w-full max-w-xs flex flex-col items-center space-y-4 z-10 mb-6">
+            <button
+              onClick={abrirInvitacion}
+              className="w-full py-4 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#2E1F47] font-bold text-xs tracking-[0.2em] rounded-full shadow-2xl uppercase transition-transform active:scale-95 border border-white/20"
+            >
+              ABRIR INVITACIÓN
+            </button>
+            <p className="text-[10px] text-purple-200/90 italic font-sans drop-shadow">
+              Al abrirla sonará «Veo en ti la luz», la canción de Rapunzel
+            </p>
           </div>
         </div>
       )}
 
-      {/* CONTENIDO PRINCIPAL DE LA INVITACIÓN */}
+      {/* PÁGINA PRINCIPAL */}
       <div className={`bg-[#FAF6FF] ${!isOpen ? 'hidden' : 'block'}`}>
 
         {/* Cabecera */}
@@ -254,7 +225,7 @@ export default function App() {
           <h1 className="text-5xl text-[#E5C158]" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole Rivas</h1>
         </section>
 
-        {/* Texto Emotivo y Foto (Reveal Scroll) */}
+        {/* Texto Emotivo y Foto */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto">
           <p className="text-xs italic leading-relaxed text-[#5A456E] mb-6">
             Toda gran historia tiene una noche especial. Hoy llega el momento de abrir un nuevo capítulo en mi vida y celebrar mis quince años rodeada de las personas que han sido parte de mi camino.
@@ -272,7 +243,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* Fecha y Contador (Reveal Scroll) */}
+        {/* Fecha y Contador */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center bg-[#F3ECF8]">
           <h3 className="text-4xl text-[#5A456E] mb-6" style={{ fontFamily: "'Alex Brush', cursive" }}>Enero</h3>
 
@@ -313,7 +284,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* Ubicación (Reveal Scroll) */}
+        {/* Ubicación */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 text-center max-w-md mx-auto">
           <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Ubicación</h3>
           <div className="w-12 h-0.5 bg-[#E5C158] mx-auto mb-6"></div>
@@ -331,7 +302,7 @@ export default function App() {
           </a>
         </section>
 
-        {/* Galería (Reveal Scroll) */}
+        {/* Galería */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto">
           <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Galería</h3>
           <div className="w-12 h-0.5 bg-[#E5C158] mx-auto mb-6"></div>
@@ -343,7 +314,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* Dress Code (Reveal Scroll) */}
+        {/* Dress Code */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 bg-[#F3ECF8]">
           <div className="max-w-md mx-auto bg-white rounded-3xl p-6 shadow-sm border border-[#EADBEE] text-center">
             <h3 className="text-4xl text-[#5A456E] mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Dress code</h3>
@@ -364,7 +335,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* Obsequios (Reveal Scroll) */}
+        {/* Obsequios */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 text-center max-w-md mx-auto">
           <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Obsequios</h3>
           <p className="text-xs italic text-[#7A6282] mb-4 max-w-xs mx-auto">
@@ -373,7 +344,7 @@ export default function App() {
           <p className="text-[10px] tracking-widest font-bold text-[#3D2C4D] uppercase font-sans">LLUVIA DE SOBRES</p>
         </section>
 
-        {/* Asistencia (Reveal Scroll) */}
+        {/* Asistencia */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 bg-[#F3ECF8]">
           <div className="max-w-md mx-auto bg-white rounded-3xl p-6 shadow-md border border-[#EADBEE] text-center">
             <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Asistencia</h3>
@@ -440,7 +411,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* Playlist (Reveal Scroll) */}
+        {/* Playlist */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 max-w-md mx-auto text-center">
           <h3 className="text-4xl text-[#5A456E] mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Playlist</h3>
           <p className="text-xs italic text-[#7A6282] mb-4">¿Qué canción no debería faltar en la fiesta?</p>
