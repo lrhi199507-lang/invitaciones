@@ -21,6 +21,14 @@ export default function App() {
   const [cancionUrl, setCancionUrl] = useState('');
   const [playlistEnviada, setPlaylistEnviada] = useState(false);
 
+  // Modal para Galería
+  const [imagenAmpliada, setImagenAmpliada] = useState<string | null>(null);
+
+  // Modal y Estado de Pago Móvil
+  const [modalPagoOpen, setModalPagoOpen] = useState(false);
+  const [capturaNombre, setCapturaNombre] = useState('');
+  const [capturaEnviada, setCapturaEnviada] = useState(false);
+
   // Contador
   const [timeLeft, setTimeLeft] = useState({ dias: 0, horas: 0, minutos: 0, segundos: 0 });
 
@@ -56,7 +64,7 @@ export default function App() {
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.1 }
     );
 
     const elements = document.querySelectorAll('.reveal');
@@ -120,51 +128,138 @@ export default function App() {
     <div className="min-h-screen bg-[#2E1F47] text-[#3D2C4D] font-serif relative overflow-x-hidden select-none">
       <audio ref={audioRef} src={AUDIO_URL} loop />
 
-      {/* ANIMACIONES Y DESTELLOS CORRIDOS */}
+      {/* ESTILOS DE LINTERNAS SUTILES Y ANIMACIONES */}
       <style>{`
-        @keyframes floatUp {
-          0% { transform: translateY(105vh) scale(0.3); opacity: 0; }
-          20% { opacity: 0.9; }
-          80% { opacity: 0.9; }
-          100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        @keyframes floatLantern {
+          0% {
+            transform: translateY(105vh) scale(0.6);
+            opacity: 0;
+          }
+          20% {
+            opacity: 0.5;
+          }
+          80% {
+            opacity: 0.5;
+          }
+          100% {
+            transform: translateY(-110vh) scale(0.9);
+            opacity: 0;
+          }
         }
-        .sparkle-lantern {
+        .lantern-floating {
           position: fixed;
+          bottom: 0;
           pointer-events: none;
-          border-radius: 50%;
-          animation: floatUp linear infinite;
-          z-index: 40;
+          animation: floatLantern linear infinite;
+          z-index: 10;
+          transform: translateY(105vh);
+        }
+        @keyframes flicker {
+          0%, 100% { opacity: 0.5; transform: scale(0.9); }
+          50% { opacity: 0.8; transform: scale(1.1); }
+        }
+        .lantern-flame {
+          animation: flicker 1.8s ease-in-out infinite;
         }
       `}</style>
 
-      {/* LINTERNAS Y DESTELLOS EN TODA LA PÁGINA */}
-      <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
-        {[...Array(35)].map((_, i) => {
-          const size = Math.random() * 8 + 4;
-          return (
-            <div
-              key={i}
-              className="sparkle-lantern"
-              style={{
-                left: `${Math.random() * 100}%`,
-                width: `${size}px`,
-                height: `${size * 1.3}px`,
-                borderRadius: '30% 30% 40% 40%',
-                backgroundColor: i % 3 === 0 ? '#FFE082' : i % 3 === 1 ? '#F5B041' : '#E8DAEF',
-                boxShadow: i % 2 === 0 ? '0 0 12px #FFE082, 0 0 20px #F5B041' : '0 0 10px #E8DAEF',
-                animationDuration: `${Math.random() * 7 + 6}s`,
-                animationDelay: `${Math.random() * 6}s`,
-              }}
-            />
-          );
-        })}
+      {/* BOMBILLITOS FLOTANTES SUTILES Y TRANSPARENTES */}
+      <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
+        {[...Array(15)].map((_, i) => (
+          <div
+            key={i}
+            className="lantern-floating"
+            style={{
+              left: `${i * 6.5 + (i % 2) * 3}%`,
+              animationDuration: `${(i % 3) * 4 + 9}s`,
+              animationDelay: `${(i * 0.8) % 6}s`,
+            }}
+          >
+            <div className="relative w-6 h-6 rounded-full bg-gradient-to-t from-[#D4AF37]/40 via-[#F3E5AB]/40 to-[#FFF9C4]/40 p-0.5 shadow-[0_0_10px_rgba(255,215,0,0.3)] flex flex-col items-center justify-center border border-white/30 opacity-50">
+              <div className="text-[5px] text-[#5A456E] font-bold opacity-60 mb-0.2">☀️</div>
+              <div className="lantern-flame w-2 h-2 bg-gradient-to-t from-[#FF4500]/70 via-[#FFD700]/70 to-[#FFF]/70 rounded-full shadow-[0_0_6px_#FFD700]"></div>
+            </div>
+          </div>
+        ))}
       </div>
+
+      {/* MODAL PARA ZOOM DE IMÁGENES */}
+      {imagenAmpliada && (
+        <div 
+          onClick={() => setImagenAmpliada(null)}
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm cursor-pointer"
+        >
+          <div className="relative max-w-md w-full rounded-3xl overflow-hidden border-2 border-[#E5C158]/50 shadow-2xl">
+            <img src={imagenAmpliada} alt="Ampliada" className="w-full h-auto max-h-[80vh] object-contain bg-black" />
+            <span className="absolute top-3 right-3 bg-[#2E1F47]/80 text-[#E5C158] w-8 h-8 rounded-full flex items-center justify-center text-xs font-sans">✕</span>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PARA PAGO MÓVIL Y COMPROBANTE */}
+      {modalPagoOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="relative max-w-sm w-full bg-white rounded-3xl p-6 shadow-2xl border border-[#E5C158]/40 text-left">
+            <button 
+              onClick={() => setModalPagoOpen(false)}
+              className="absolute top-4 right-4 text-[#5A456E] font-bold text-sm w-7 h-7 rounded-full bg-[#F3ECF8] flex items-center justify-center cursor-pointer"
+            >
+              ✕
+            </button>
+
+            <h4 className="text-2xl font-bold text-[#5A456E] mb-3 text-center" style={{ fontFamily: "'Alex Brush', cursive" }}>Datos de Pago Móvil</h4>
+            <div className="text-sm space-y-1.5 text-[#3D2C4D] font-sans bg-[#F3ECF8]/50 p-4 rounded-2xl mb-4 border border-[#EADBEE]">
+              <p><strong>Banco:</strong> Bancamiga / Mercantil</p>
+              <p><strong>Teléfono:</strong> 0412-1234567</p>
+              <p><strong>C.I:</strong> V-12.345.678</p>
+            </div>
+
+            <p className="text-xs text-[#7A6282] mb-2 font-sans font-medium text-center">¿Realizaste tu transferencia? Sube tu comprobante:</p>
+            {!capturaEnviada ? (
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  placeholder="Tu Nombre y Apellido"
+                  value={capturaNombre}
+                  onChange={(e) => setCapturaNombre(e.target.value)}
+                  className="w-full p-3 rounded-xl bg-[#FAF6FF] border border-[#EADBEE] text-sm text-[#3D2C4D] focus:outline-none font-sans"
+                />
+                <label className="block w-full py-3 bg-[#5A456E] text-white text-xs tracking-wider uppercase font-semibold rounded-xl text-center cursor-pointer font-sans shadow-sm">
+                  📷 Adjuntar Captura de Pago
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={() => { 
+                      if(capturaNombre.trim() !== '') {
+                        setCapturaEnviada(true);
+                      } else {
+                        alert("Por favor ingresa tu nombre primero.");
+                      } 
+                    }} 
+                    className="hidden" 
+                  />
+                </label>
+              </div>
+            ) : (
+              <div className="py-3 text-center">
+                <p className="text-sm font-semibold text-[#5A456E] font-sans">¡Comprobante adjuntado con éxito!</p>
+                <button 
+                  onClick={() => { setCapturaEnviada(false); setCapturaNombre(''); }}
+                  className="mt-2 text-xs text-[#7A6282] underline font-sans cursor-pointer"
+                >
+                  Subir otro comprobante
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* REPRODUCTOR FLOTANTE */}
       {isOpen && (
         <button
           onClick={toggleAudio}
-          className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-[#2E1F47]/90 text-[#E5C158] flex items-center justify-center shadow-2xl border border-[#E5C158]/50 backdrop-blur-sm"
+          className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-[#2E1F47]/90 text-[#E5C158] flex items-center justify-center shadow-2xl border border-[#E5C158]/50 backdrop-blur-sm cursor-pointer"
         >
           {isPlaying ? (
             <span className="flex items-end space-x-0.5 h-4">
@@ -178,94 +273,132 @@ export default function App() {
         </button>
       )}
 
-      {/* PORTADA TORRE RAPUNZEL CON LINTERNAS */}
+      {/* PORTADA CASTILLO / TORRE RAPUNZEL (CENTRADA Y LIMPIA) */}
       {!isOpen && (
         <div 
-          className={`fixed inset-0 z-50 flex flex-col items-center justify-between py-16 px-6 text-center bg-cover bg-center transition-all duration-1000 ${
+          className={`fixed inset-0 z-50 flex flex-col items-center justify-center py-12 px-6 text-center bg-cover bg-center transition-all duration-1000 ${
             isOpening ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
           }`}
           style={{ 
-            backgroundImage: `linear-gradient(to bottom, rgba(30, 18, 48, 0.65), rgba(20, 10, 35, 0.85)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000')` 
+            backgroundImage: `linear-gradient(to bottom, rgba(30, 18, 48, 0.6), rgba(20, 10, 35, 0.85)), url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000')` 
           }}
         >
-          <div className="flex flex-col items-center mt-8 z-10">
-            <span className="text-[11px] tracking-[0.35em] uppercase text-[#F3E5AB] mb-4 font-sans drop-shadow-md">MIS XV AÑOS</span>
-            <h1 className="text-7xl text-[#E5C158] mb-3 drop-shadow-lg" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole</h1>
-            <p className="text-xs text-purple-100 italic max-w-xs font-sans drop-shadow">
-              "Una noche donde las linternas brillarán por ti"
-            </p>
-          </div>
+          <div className="flex flex-col items-center z-10 max-w-xs w-full space-y-6">
+            <div>
+              <span className="text-xs tracking-[0.35em] uppercase text-[#F3E5AB] mb-3 block font-sans drop-shadow-md">MIS XV AÑOS</span>
+              <h1 className="text-7xl text-[#E5C158] mb-2 drop-shadow-lg" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole</h1>
+              <p className="text-sm text-purple-100 italic font-sans drop-shadow">
+                "Una noche donde las linternas brillarán por ti"
+              </p>
+            </div>
 
-          <div className="w-full max-w-xs flex flex-col items-center space-y-4 z-10 mb-6">
-            <button
-              onClick={abrirInvitacion}
-              className="w-full py-4 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#2E1F47] font-bold text-xs tracking-[0.2em] rounded-full shadow-2xl uppercase transition-transform active:scale-95 border border-white/20"
-            >
-              ABRIR INVITACIÓN
-            </button>
-            <p className="text-[10px] text-purple-200/90 italic font-sans drop-shadow">
-              Al abrirla sonará «Veo en ti la luz», la canción de Rapunzel
-            </p>
+            <div className="w-full pt-4">
+              <button
+                onClick={abrirInvitacion}
+                className="w-full py-4 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#2E1F47] font-bold text-xs tracking-[0.2em] rounded-full shadow-2xl uppercase transition-transform active:scale-95 border border-white/20 cursor-pointer"
+              >
+                ABRIR INVITACIÓN
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* PÁGINA PRINCIPAL */}
-      <div className={`bg-[#FAF6FF] ${!isOpen ? 'hidden' : 'block'}`}>
+      <div className={`bg-[#FAF6FF] relative ${!isOpen ? 'hidden' : 'block'}`}>
+
+        {/* CABELLO DORADO SVG */}
+        <div className="absolute inset-0 pointer-events-none z-5 overflow-hidden">
+          <svg className="w-full h-full" viewBox="0 0 100 1000" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="goldHairReal" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FFF59D" />
+                <stop offset="30%" stopColor="#F5B041" />
+                <stop offset="70%" stopColor="#D4AF37" />
+                <stop offset="100%" stopColor="#9A7B0C" />
+              </linearGradient>
+            </defs>
+
+            <path
+              d="M 50 0 C 70 80, 20 180, 30 280 C 85 400, 10 520, 45 640 C 85 760, 20 880, 50 1000"
+              fill="none"
+              stroke="url(#goldHairReal)"
+              strokeWidth="4"
+              opacity="0.85"
+            />
+            <path
+              d="M 50 0 C 67 83, 23 183, 33 283 C 82 403, 13 523, 48 643 C 82 763, 23 883, 48 1000"
+              fill="none"
+              stroke="#FFF9C4"
+              strokeWidth="1.5"
+              opacity="0.95"
+            />
+          </svg>
+
+          <div className="absolute top-[12%] left-[48%] text-sm opacity-90">🌸</div>
+          <div className="absolute top-[28%] left-[28%] text-sm opacity-90">💜</div>
+          <div className="absolute top-[48%] left-[62%] text-sm opacity-90">🌸</div>
+          <div className="absolute top-[68%] left-[25%] text-sm opacity-90">🌼</div>
+          <div className="absolute top-[88%] left-[48%] text-sm opacity-90">🌸</div>
+        </div>
 
         {/* Cabecera */}
         <section 
-          className="py-24 px-6 text-center bg-cover bg-center relative text-white"
-          style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.8), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000')` }}
+          className="py-24 px-6 text-center bg-cover bg-center relative text-white z-20 flex flex-col items-center"
+          style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.75), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000')` }}
         >
           <p className="text-xs uppercase tracking-[0.25em] text-purple-200 mb-3 font-sans">Estás invitado a celebrar mis</p>
           <h2 className="text-7xl font-bold text-[#E5C158] tracking-widest my-1" style={{ fontFamily: "'Cinzel', serif" }}>XV</h2>
           <p className="text-xs uppercase tracking-[0.3em] text-purple-200 mb-6 font-sans">AÑOS</p>
-          <p className="text-xs italic text-purple-200 mb-2">en honor a</p>
+          <p className="text-sm italic text-purple-200 mb-2">en honor a</p>
           <h1 className="text-5xl text-[#E5C158]" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole Rivas</h1>
         </section>
 
-        {/* Texto Emotivo y Foto */}
-        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto">
-          <p className="text-xs italic leading-relaxed text-[#5A456E] mb-6">
+        {/* Texto Emotivo y Foto Principal */}
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto relative z-20">
+          <p className="text-sm italic leading-relaxed text-[#5A456E] mb-6">
             Toda gran historia tiene una noche especial. Hoy llega el momento de abrir un nuevo capítulo en mi vida y celebrar mis quince años rodeada de las personas que han sido parte de mi camino.
           </p>
-          <p className="text-xs italic font-semibold text-[#3D2C4D] mb-10">
+          <p className="text-sm italic font-semibold text-[#3D2C4D] mb-10">
             Tu presencia será el detalle perfecto para hacer de esta noche un recuerdo que brillará para siempre.
           </p>
 
-          <div className="rounded-3xl overflow-hidden shadow-xl border-4 border-white">
+          <div 
+            onClick={() => setImagenAmpliada("https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800")}
+            className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative"
+          >
             <img 
               src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800" 
               alt="Nicole" 
-              className="w-full h-80 object-cover"
+              className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-105"
             />
+            <span className="absolute bottom-3 right-3 bg-[#2E1F47]/70 text-[#E5C158] text-[10px] px-3 py-1 rounded-full backdrop-blur-sm font-sans">🔍 Toca para ver</span>
           </div>
         </section>
 
         {/* Fecha y Contador */}
-        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center bg-[#F3ECF8]">
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center bg-[#F3ECF8]/90 relative z-20">
           <h3 className="text-4xl text-[#5A456E] mb-6" style={{ fontFamily: "'Alex Brush', cursive" }}>Enero</h3>
 
-          <div className="flex justify-center space-x-3 text-xs mb-6 text-[#5A456E]">
-            <div className="flex flex-col items-center opacity-60"><span className="text-[9px]">LUN</span><span>11</span></div>
-            <div className="flex flex-col items-center opacity-60"><span className="text-[9px]">MAR</span><span>12</span></div>
-            <div className="flex flex-col items-center opacity-60"><span className="text-[9px]">MIÉ</span><span>13</span></div>
-            <div className="flex flex-col items-center opacity-60"><span className="text-[9px]">JUE</span><span>14</span></div>
-            <div className="flex flex-col items-center opacity-60"><span className="text-[9px]">VIE</span><span>15</span></div>
-            <div className="flex flex-col items-center font-bold text-[#2E1F47] bg-[#E5C158] px-2.5 py-1 rounded-xl shadow-sm">
-              <span className="text-[9px]">SÁB</span><span>16</span>
+          <div className="flex justify-center space-x-3 text-sm mb-6 text-[#5A456E] font-medium">
+            <div className="flex flex-col items-center opacity-60"><span className="text-[11px]">LUN</span><span className="text-base">11</span></div>
+            <div className="flex flex-col items-center opacity-60"><span className="text-[11px]">MAR</span><span className="text-base">12</span></div>
+            <div className="flex flex-col items-center opacity-60"><span className="text-[11px]">MIÉ</span><span className="text-base">13</span></div>
+            <div className="flex flex-col items-center opacity-60"><span className="text-[11px]">JUE</span><span className="text-base">14</span></div>
+            <div className="flex flex-col items-center opacity-60"><span className="text-[11px]">VIE</span><span className="text-base">15</span></div>
+            <div className="flex flex-col items-center font-bold text-[#2E1F47] bg-[#E5C158] px-3 py-1.5 rounded-xl shadow-sm">
+              <span className="text-[11px]">SÁB</span><span className="text-lg">16</span>
             </div>
-            <div className="flex flex-col items-center opacity-60"><span className="text-[9px]">DOM</span><span>17</span></div>
+            <div className="flex flex-col items-center opacity-60"><span className="text-[11px]">DOM</span><span className="text-base">17</span></div>
           </div>
 
-          <p className="text-[10px] tracking-widest text-[#3D2C4D] uppercase font-sans mb-1">SÁBADO · 16 DE ENERO DE 2027</p>
+          <p className="text-xs tracking-widest text-[#3D2C4D] uppercase font-sans mb-1 font-semibold">SÁBADO · 16 DE ENERO DE 2027</p>
           <p className="text-2xl font-semibold text-[#5A456E] font-sans mb-2">07:00 PM</p>
-          <p className="text-xs italic text-[#7A6282] mb-8">¡Llega puntual para que no te pierdas las sorpresas!</p>
+          <p className="text-sm italic text-[#7A6282] mb-8">¡Llega puntual para que no te pierdas las sorpresas!</p>
 
           <div 
             className="rounded-3xl p-6 max-w-xs mx-auto shadow-xl text-white bg-cover bg-center"
-            style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.9), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=500')` }}
+            style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.9), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=500')` }}
           >
             <h4 className="text-2xl text-[#E5C158] mb-4" style={{ fontFamily: "'Alex Brush', cursive" }}>Solo faltan...</h4>
             <div className="grid grid-cols-4 gap-2 text-center">
@@ -277,7 +410,7 @@ export default function App() {
               ].map((item, idx) => (
                 <div key={idx} className="bg-white/10 rounded-xl p-2 border border-white/10">
                   <span className="block text-lg font-bold text-[#E5C158] font-sans">{String(item.val).padStart(2, '0')}</span>
-                  <span className="text-[7px] tracking-wider text-purple-200 uppercase font-sans">{item.label}</span>
+                  <span className="text-[8px] tracking-wider text-purple-200 uppercase font-sans">{item.label}</span>
                 </div>
               ))}
             </div>
@@ -285,73 +418,89 @@ export default function App() {
         </section>
 
         {/* Ubicación */}
-        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 text-center max-w-md mx-auto">
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 text-center max-w-md mx-auto relative z-20">
           <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Ubicación</h3>
           <div className="w-12 h-0.5 bg-[#E5C158] mx-auto mb-6"></div>
 
           <h4 className="text-sm font-bold tracking-widest text-[#2E1F47] uppercase font-sans mb-1">CASONA PALMA REAL</h4>
-          <p className="text-[10px] text-[#7A6282] uppercase tracking-widest font-sans mb-6">VALENCIA, CARABOBO</p>
+          <p className="text-xs text-[#7A6282] uppercase tracking-widest font-sans mb-6">VALENCIA, CARABOBO</p>
 
           <a
             href="https://maps.google.com"
             target="_blank"
             rel="noreferrer"
-            className="inline-block px-8 py-3 bg-[#5A456E] text-white text-[10px] tracking-widest uppercase font-semibold rounded-full shadow-md font-sans"
+            className="inline-block px-8 py-3 bg-[#5A456E] text-white text-xs tracking-widest uppercase font-semibold rounded-full shadow-md font-sans cursor-pointer"
           >
             VER UBICACIÓN
           </a>
         </section>
 
         {/* Galería */}
-        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto">
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto relative z-20">
           <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Galería</h3>
           <div className="w-12 h-0.5 bg-[#E5C158] mx-auto mb-6"></div>
 
           <div className="grid grid-cols-2 gap-3">
-            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=500" alt="Foto 1" className="col-span-2 w-full h-52 object-cover rounded-2xl shadow-sm" />
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500" alt="Foto 2" className="w-full h-36 object-cover rounded-2xl shadow-sm" />
-            <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=500" alt="Foto 3" className="w-full h-36 object-cover rounded-2xl shadow-sm" />
+            {[
+              "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=500",
+              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500",
+              "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=500"
+            ].map((imgUrl, i) => (
+              <div 
+                key={i} 
+                onClick={() => setImagenAmpliada(imgUrl)}
+                className={`${i === 0 ? 'col-span-2 h-52' : 'h-36'} overflow-hidden rounded-2xl shadow-sm bg-white cursor-pointer relative group`}
+              >
+                <img src={imgUrl} alt={`Foto ${i}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              </div>
+            ))}
           </div>
         </section>
 
         {/* Dress Code */}
-        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 bg-[#F3ECF8]">
-          <div className="max-w-md mx-auto bg-white rounded-3xl p-6 shadow-sm border border-[#EADBEE] text-center">
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 bg-[#F3ECF8]/90 relative z-20">
+          <div className="max-w-md mx-auto bg-white/95 backdrop-blur-sm rounded-3xl p-6 shadow-sm border border-[#EADBEE] text-center">
             <h3 className="text-4xl text-[#5A456E] mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Dress code</h3>
-            <p className="text-[10px] tracking-widest text-[#2E1F47] uppercase font-sans font-bold mb-4">SEMI-FORMAL</p>
-            <p className="text-xs italic text-[#7A6282] mb-6">
+            <p className="text-xs tracking-widest text-[#2E1F47] uppercase font-sans font-bold mb-4">SEMI-FORMAL</p>
+            <p className="text-sm italic text-[#7A6282] mb-6">
               Que las damas brillen con su belleza única y los caballeros con su porte y estilo.
             </p>
 
-            <p className="text-[9px] tracking-widest uppercase text-[#3D2C4D] font-bold font-sans mb-3">COLORES RESERVADOS</p>
+            <p className="text-[10px] tracking-widest uppercase text-[#3D2C4D] font-bold font-sans mb-3">COLORES RESERVADOS</p>
             <div className="flex justify-center space-x-4 mb-4">
               <div className="w-9 h-9 rounded-full bg-[#E2D4F0] border-2 border-[#E5C158]"></div>
               <div className="w-9 h-9 rounded-full bg-[#5A456E] border-2 border-[#E5C158]"></div>
               <div className="w-9 h-9 rounded-full bg-[#E5C158] border-2 border-white shadow"></div>
             </div>
-            <p className="text-[10px] italic text-[#7A6282]">
+            <p className="text-sm italic text-[#7A6282]">
               Los tonos lila, morado y dorado representan la esencia de mis sueños; les solicitamos gentilmente no utilizarlos.
             </p>
           </div>
         </section>
 
         {/* Obsequios */}
-        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 text-center max-w-md mx-auto">
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 text-center max-w-md mx-auto relative z-20">
           <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Obsequios</h3>
-          <p className="text-xs italic text-[#7A6282] mb-4 max-w-xs mx-auto">
-            Mi mayor regalo será tu presencia. Sin embargo, si deseas obsequiarme algo más, una lluvia de sobres será siempre bienvenida.
+          <p className="text-sm italic text-[#7A6282] mb-6 max-w-xs mx-auto leading-relaxed">
+            Mi mayor regalo será tu presencia. Si deseas obsequiarme algo, disponemos de lluvia de sobres en el evento o transferencia mediante pago móvil.
           </p>
-          <p className="text-[10px] tracking-widest font-bold text-[#3D2C4D] uppercase font-sans">LLUVIA DE SOBRES</p>
+
+          <button
+            onClick={() => setModalPagoOpen(true)}
+            className="px-8 py-3.5 bg-[#5A456E] text-white text-xs tracking-widest uppercase font-semibold rounded-full shadow-md font-sans cursor-pointer hover:bg-[#48355B] transition-colors"
+          >
+            💳 Ver Datos de Pago Móvil
+          </button>
         </section>
 
         {/* Asistencia */}
-        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 bg-[#F3ECF8]">
-          <div className="max-w-md mx-auto bg-white rounded-3xl p-6 shadow-md border border-[#EADBEE] text-center">
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 bg-[#F3ECF8]/90 relative z-20">
+          <div className="max-w-md mx-auto bg-white/95 backdrop-blur-sm rounded-3xl p-6 shadow-md border border-[#EADBEE] text-center">
             <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Asistencia</h3>
 
             {!familiaSeleccionada ? (
               <div>
-                <p className="text-xs italic text-[#7A6282] mb-4">
+                <p className="text-sm italic text-[#7A6282] mb-4">
                   Ingresa tu apellido para encontrar tu invitación:
                 </p>
                 <input
@@ -359,7 +508,7 @@ export default function App() {
                   placeholder="Ej. Hernández"
                   value={busqueda}
                   onChange={(e) => setBusqueda(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-[#FAF6FF] border border-[#EADBEE] text-xs text-[#3D2C4D] focus:outline-none mb-3 font-sans"
+                  className="w-full p-3.5 rounded-xl bg-[#FAF6FF] border border-[#EADBEE] text-sm text-[#3D2C4D] focus:outline-none mb-3 font-sans"
                 />
 
                 {familiasFiltradas.length > 0 && (
@@ -368,10 +517,10 @@ export default function App() {
                       <button
                         key={fam.id}
                         onClick={() => { setFamiliaSeleccionada(fam); setAsistentesConfirmados(fam.maxCupos); }}
-                        className="w-full text-left p-3 rounded-xl bg-[#F3ECF8] border border-[#E5C158]/40 flex justify-between items-center"
+                        className="w-full text-left p-3.5 rounded-xl bg-[#F3ECF8] border border-[#E5C158]/40 flex justify-between items-center cursor-pointer"
                       >
-                        <span className="font-semibold text-xs text-[#2E1F47] font-sans">{fam.nombre}</span>
-                        <span className="text-[9px] bg-[#5A456E] text-white px-2 py-0.5 rounded-full font-sans">
+                        <span className="font-semibold text-sm text-[#2E1F47] font-sans">{fam.nombre}</span>
+                        <span className="text-[10px] bg-[#5A456E] text-white px-2.5 py-1 rounded-full font-sans">
                           Máx. {fam.maxCupos}
                         </span>
                       </button>
@@ -381,28 +530,28 @@ export default function App() {
               </div>
             ) : confirmadoExito ? (
               <div className="py-4">
-                <h4 className="text-lg font-bold text-[#5A456E] font-sans mb-1">¡Asistencia Confirmada!</h4>
-                <p className="text-xs text-[#7A6282]">
+                <h4 className="text-xl font-bold text-[#5A456E] font-sans mb-1">¡Asistencia Confirmada!</h4>
+                <p className="text-sm text-[#7A6282]">
                   Guardamos {asistentesConfirmados} lugar(es) para la <strong>{familiaSeleccionada.nombre}</strong>.
                 </p>
               </div>
             ) : (
               <div>
-                <div className="p-3 rounded-xl bg-[#F3ECF8] mb-4">
-                  <p className="text-[9px] uppercase tracking-wider text-[#7A6282] font-sans">INVITACIÓN DE</p>
+                <div className="p-3.5 rounded-xl bg-[#F3ECF8] mb-4">
+                  <p className="text-[10px] uppercase tracking-wider text-[#7A6282] font-sans">INVITACIÓN DE</p>
                   <h4 className="text-base font-bold text-[#2E1F47] font-sans">{familiaSeleccionada.nombre}</h4>
                 </div>
 
-                <p className="text-xs text-[#7A6282] mb-3 font-sans">Asistentes a confirmar:</p>
+                <p className="text-sm text-[#7A6282] mb-3 font-sans">Asistentes a confirmar:</p>
                 <div className="flex items-center justify-center space-x-4 mb-4">
-                  <button onClick={() => setAsistentesConfirmados(Math.max(1, asistentesConfirmados - 1))} className="w-8 h-8 rounded-full bg-[#5A456E] text-white font-bold font-sans">-</button>
+                  <button onClick={() => setAsistentesConfirmados(Math.max(1, asistentesConfirmados - 1))} className="w-9 h-9 rounded-full bg-[#5A456E] text-white font-bold font-sans cursor-pointer text-base">-</button>
                   <span className="text-lg font-bold text-[#2E1F47] font-sans">{asistentesConfirmados}</span>
-                  <button onClick={() => setAsistentesConfirmados(Math.min(familiaSeleccionada.maxCupos, asistentesConfirmados + 1))} className="w-8 h-8 rounded-full bg-[#5A456E] text-white font-bold font-sans">+</button>
+                  <button onClick={() => setAsistentesConfirmados(Math.min(familiaSeleccionada.maxCupos, asistentesConfirmados + 1))} className="w-9 h-9 rounded-full bg-[#5A456E] text-white font-bold font-sans cursor-pointer text-base">+</button>
                 </div>
 
                 <div className="flex space-x-2">
-                  <button onClick={() => setFamiliaSeleccionada(null)} className="w-1/3 py-2.5 rounded-full border text-[10px] uppercase font-sans">Cambiar</button>
-                  <button onClick={enviarAsistencia} disabled={enviando} className="w-2/3 py-2.5 rounded-full bg-[#D4AF37] text-[#2E1F47] font-bold text-[10px] uppercase font-sans shadow-md">
+                  <button onClick={() => setFamiliaSeleccionada(null)} className="w-1/3 py-3 rounded-full border text-xs uppercase font-sans cursor-pointer">Cambiar</button>
+                  <button onClick={enviarAsistencia} disabled={enviando} className="w-2/3 py-3 rounded-full bg-[#D4AF37] text-[#2E1F47] font-bold text-xs uppercase font-sans shadow-md cursor-pointer">
                     {enviando ? 'Guardando...' : 'Confirmar Aquí'}
                   </button>
                 </div>
@@ -412,32 +561,32 @@ export default function App() {
         </section>
 
         {/* Playlist */}
-        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 max-w-md mx-auto text-center">
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 max-w-md mx-auto text-center relative z-20">
           <h3 className="text-4xl text-[#5A456E] mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Playlist</h3>
-          <p className="text-xs italic text-[#7A6282] mb-4">¿Qué canción no debería faltar en la fiesta?</p>
+          <p className="text-sm italic text-[#7A6282] mb-4">¿Qué canción no debería faltar en la fiesta?</p>
           {!playlistEnviada ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <input
                 type="text"
                 placeholder="Nombre o link de Spotify / YouTube"
                 value={cancionUrl}
                 onChange={(e) => setCancionUrl(e.target.value)}
-                className="w-full p-3 rounded-xl bg-[#F3ECF8] border border-[#EADBEE] text-xs text-[#3D2C4D] focus:outline-none font-sans"
+                className="w-full p-3.5 rounded-xl bg-[#F3ECF8] border border-[#EADBEE] text-sm text-[#3D2C4D] focus:outline-none font-sans"
               />
-              <button onClick={() => { if(cancionUrl) setPlaylistEnviada(true); }} className="w-full py-2.5 rounded-full bg-[#5A456E] text-white text-[10px] font-sans uppercase font-semibold">
+              <button onClick={() => { if(cancionUrl) setPlaylistEnviada(true); }} className="w-full py-3 rounded-full bg-[#5A456E] text-white text-xs font-sans uppercase font-semibold cursor-pointer">
                 Sugerir Canción
               </button>
             </div>
           ) : (
-            <p className="text-xs font-semibold text-[#5A456E]">¡Gracias por tu recomendación!</p>
+            <p className="text-sm font-semibold text-[#5A456E]">¡Gracias por tu recomendación!</p>
           )}
         </section>
 
         {/* Cierre */}
-        <footer className="py-12 px-6 text-center bg-[#2E1F47] text-purple-200">
-          <p className="text-xs italic mb-2">¡Los espero para darnos un fuerte abrazo!</p>
+        <footer className="py-12 px-6 text-center bg-[#2E1F47] text-purple-200 relative z-20">
+          <p className="text-sm italic mb-2">¡Los espero para darnos un fuerte abrazo!</p>
           <h4 className="text-3xl text-[#E5C158] mb-4" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole</h4>
-          <p className="text-[9px] tracking-widest uppercase opacity-60 font-sans">XV AÑOS · NICOLE RIVAS · 16.01.2027</p>
+          <p className="text-[10px] tracking-widest uppercase opacity-60 font-sans">XV AÑOS · NICOLE RIVAS · 16.01.2027</p>
         </footer>
 
       </div>
