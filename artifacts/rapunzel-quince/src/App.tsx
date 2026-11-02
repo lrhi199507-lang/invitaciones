@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface Familia {
   id: string;
@@ -13,44 +13,64 @@ const LISTA_INVITADOS: Familia[] = [
   { id: '4', nombre: 'Familia García', maxCupos: 3 },
 ];
 
-const GOOGLE_SHEETS_SCRIPT_URL = "AQUI_PONDREMOS_TU_LINK_DE_GOOGLE_APPS_SCRIPT";
+const GOOGLE_SHEETS_SCRIPT_URL = "AQUI_TU_SCRIPT_URL";
+const AUDIO_URL = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3"; // O tu ruta local /veo-en-ti-la-luz.mp3
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Estados Asistencia
   const [busqueda, setBusqueda] = useState('');
   const [familiaSeleccionada, setFamiliaSeleccionada] = useState<Familia | null>(null);
   const [asistentesConfirmados, setAsistentesConfirmados] = useState<number>(1);
   const [enviando, setEnviando] = useState(false);
   const [confirmadoExito, setConfirmadoExito] = useState(false);
 
-  // Trivia state
-  const [triviaRespuesta, setTriviaRespuesta] = useState<string | null>(null);
-
-  // Playlist state
+  // Estados Playlist
   const [cancionUrl, setCancionUrl] = useState('');
   const [playlistEnviada, setPlaylistEnviada] = useState(false);
 
-  // Contador para el 16 de enero de 2027
+  // Contador 16 Enero 2027
   const [timeLeft, setTimeLeft] = useState({ dias: 0, horas: 0, minutos: 0, segundos: 0 });
 
   useEffect(() => {
-    const targetDate = new Date('2027-01-16T20:00:00').getTime();
+    const targetDate = new Date('2027-01-16T19:00:00').getTime();
     const interval = setInterval(() => {
       const now = new Date().getTime();
-      const difference = targetDate - now;
+      const diff = targetDate - now;
 
-      if (difference > 0) {
+      if (diff > 0) {
         setTimeLeft({
-          dias: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          horas: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutos: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          segundos: Math.floor((difference % (1000 * 60)) / 1000),
+          dias: Math.floor(diff / (1000 * 60 * 60 * 24)),
+          horas: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutos: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+          segundos: Math.floor((diff % (1000 * 60)) / 1000),
         });
       }
     }, 1000);
 
     return () => clearInterval(interval);
   }, []);
+
+  const toggleAudio = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      }
+    }
+  };
+
+  const abrirInvitacion = () => {
+    setIsOpen(true);
+    if (audioRef.current) {
+      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+    }
+  };
 
   const familiasFiltradas = busqueda.trim() === '' ? [] : LISTA_INVITADOS.filter(f => 
     f.nombre.toLowerCase().includes(busqueda.toLowerCase())
@@ -60,7 +80,7 @@ export default function App() {
     if (!familiaSeleccionada) return;
     setEnviando(true);
     try {
-      if (GOOGLE_SHEETS_SCRIPT_URL !== "AQUI_PONDREMOS_TU_LINK_DE_GOOGLE_APPS_SCRIPT") {
+      if (GOOGLE_SHEETS_SCRIPT_URL !== "AQUI_TU_SCRIPT_URL") {
         await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
@@ -83,183 +103,285 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-amber-100 font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#FAF6FF] text-[#3D2C4D] font-serif relative overflow-x-hidden select-none">
+      <audio ref={audioRef} src={AUDIO_URL} loop />
 
-      {/* 1. INTRO / PORTADA */}
+      {/* Rebotador / Control de Audio Flotante */}
+      {isOpen && (
+        <button
+          onClick={toggleAudio}
+          className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-[#3B284C] text-[#E5C158] flex items-center justify-center shadow-2xl border border-[#E5C158]/40"
+        >
+          {isPlaying ? (
+            <span className="flex items-end space-x-0.5 h-4">
+              <span className="w-1 bg-[#E5C158] h-full animate-pulse"></span>
+              <span className="w-1 bg-[#E5C158] h-2/3 animate-pulse delay-75"></span>
+              <span className="w-1 bg-[#E5C158] h-4/5 animate-pulse delay-150"></span>
+            </span>
+          ) : (
+            <span className="text-sm">🎵</span>
+          )}
+        </button>
+      )}
+
+      {/* PORTADA (Pantalla Bienvenida con Fondo Linternas) */}
       {!isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-purple-950/95 backdrop-blur-md">
-          <div className="w-full max-w-sm p-8 rounded-3xl bg-gradient-to-b from-purple-900 via-indigo-950 to-purple-950 border-2 border-amber-400/60 shadow-2xl text-center">
-            <div className="text-5xl mb-4 animate-bounce">🏮</div>
-            <p className="text-amber-300 font-serif tracking-widest text-sm uppercase">Mis 15 Años</p>
-            <h1 className="text-4xl font-serif font-bold text-amber-200 my-2">Rapunzel</h1>
-            <p className="text-sm text-purple-200 mb-6">Una noche mágica te espera bajo los farolillos.</p>
+        <div 
+          className="fixed inset-0 z-50 flex flex-col items-center justify-between py-16 px-6 text-center bg-cover bg-center"
+          style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.75), rgba(30, 18, 48, 0.85)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000')` }}
+        >
+          <div className="flex flex-col items-center mt-10">
+            <span className="text-xs tracking-[0.3em] uppercase text-[#F3E5AB] mb-4">MIS XV AÑOS</span>
+            <h1 className="text-6xl text-[#E5C158] mb-4" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole</h1>
+            <p className="text-xs text-purple-100 italic max-w-xs font-sans">
+              "Una noche donde las linternas brillarán por ti"
+            </p>
+          </div>
 
+          <div className="w-full max-w-xs flex flex-col items-center space-y-4">
             <button
-              onClick={() => setIsOpen(true)}
-              className="w-full py-4 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 text-purple-950 font-bold rounded-xl shadow-lg transition-transform transform active:scale-95 text-lg"
+              onClick={abrirInvitacion}
+              className="w-full py-3.5 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#2E1F47] font-semibold text-xs tracking-widest rounded-full shadow-lg uppercase"
             >
-              Abrir Invitación ✨
+              ABRIR INVITACIÓN
             </button>
+            <p className="text-[10px] text-purple-200/80 italic font-sans">
+              Al abrirla sonará «Veo en ti la luz», la canción de Rapunzel
+            </p>
           </div>
         </div>
       )}
 
-      {/* 2. CONTENIDO COMPLETO */}
-      <div className={`transition-all duration-700 ${!isOpen ? 'filter blur-md pointer-events-none select-none' : ''}`}>
+      {/* CUERPO PRINCIPAL */}
+      <div className={`${!isOpen ? 'hidden' : 'block'}`}>
 
-        {/* Cabecera */}
-        <header className="py-16 text-center px-4 bg-gradient-to-b from-purple-950 via-purple-900 to-slate-950 border-b border-amber-500/20">
-          <p className="text-amber-400 text-sm tracking-widest uppercase mb-2">Mis XV Años</p>
-          <h1 className="text-5xl font-serif text-amber-200 tracking-wider mb-4">Rapunzel</h1>
-          <p className="max-w-md mx-auto text-purple-200 text-sm italic">
-            "Una noche mágica donde las linternas iluminarán nuevos sueños."
+        {/* Cabecera Principal */}
+        <section 
+          className="py-20 px-6 text-center bg-cover bg-center relative text-white"
+          style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.8), rgba(46, 31, 71, 0.9)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1000')` }}
+        >
+          <p className="text-xs uppercase tracking-[0.25em] text-purple-200 mb-3 font-sans">Estás invitado a celebrar mis</p>
+          <h2 className="text-7xl font-bold text-[#E5C158] tracking-widest my-1" style={{ fontFamily: "'Cinzel', serif" }}>XV</h2>
+          <p className="text-xs uppercase tracking-[0.3em] text-purple-200 mb-6 font-sans">AÑOS</p>
+          <p className="text-xs italic text-purple-200 mb-2">en honor a</p>
+          <h1 className="text-5xl text-[#E5C158]" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole Rivas</h1>
+        </section>
+
+        {/* Texto Emotivo e Imagen Destacada */}
+        <section className="py-12 px-6 text-center max-w-md mx-auto">
+          <p className="text-xs italic leading-relaxed text-[#5A456E] mb-6">
+            Toda gran historia tiene una noche especial. Hoy llega el momento de abrir un nuevo capítulo en mi vida y celebrar mis quince años rodeada de las personas que han sido parte de mi camino.
           </p>
-        </header>
+          <p className="text-xs italic font-semibold text-[#3D2C4D] mb-10">
+            Tu presencia será el detalle perfecto para hacer de esta noche un recuerdo que brillará para siempre.
+          </p>
 
-        {/* Cuenta Regresiva */}
-        <section className="py-10 px-4 text-center">
-          <h2 className="text-xl font-serif text-amber-300 mb-6">El Gran Día en...</h2>
-          <div className="grid grid-cols-4 gap-2 max-w-xs mx-auto">
-            {[
-              { label: 'Días', val: timeLeft.dias },
-              { label: 'Horas', val: timeLeft.horas },
-              { label: 'Min', val: timeLeft.minutos },
-              { label: 'Seg', val: timeLeft.segundos },
-            ].map((item, idx) => (
-              <div key={idx} className="bg-purple-900/50 border border-amber-400/40 rounded-xl p-3 backdrop-blur-sm">
-                <span className="block text-2xl font-bold text-amber-200">{String(item.val).padStart(2, '0')}</span>
-                <span className="text-[10px] text-purple-300 uppercase">{item.label}</span>
-              </div>
-            ))}
-          </div>
-          <p className="mt-4 text-amber-200/80 font-serif">Sábado, 16 de Enero de 2027 — 8:00 PM</p>
-        </section>
-
-        {/* Ubicación */}
-        <section className="py-10 px-4 text-center max-w-md mx-auto">
-          <div className="bg-purple-900/30 border border-amber-400/30 rounded-2xl p-6 backdrop-blur-sm">
-            <h2 className="text-xl font-serif text-amber-300 mb-2">Salón de Fiestas</h2>
-            <p className="text-sm text-purple-200 mb-4">Urb. Camoruco, Calle 104, C. 137, Valencia, Carabobo</p>
-            <a 
-              href="https://maps.google.com" 
-              target="_blank" 
-              rel="noreferrer"
-              className="inline-block px-6 py-2.5 rounded-xl border border-amber-400 text-amber-300 hover:bg-amber-400/10 text-sm font-semibold transition-all"
-            >
-              Ver Ubicación 🗺️
-            </a>
+          <div className="rounded-3xl overflow-hidden shadow-xl border-4 border-white">
+            <img 
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800" 
+              alt="Nicole" 
+              className="w-full h-80 object-cover"
+            />
           </div>
         </section>
 
-        {/* Dress Code */}
-        <section className="py-10 px-4 text-center max-w-md mx-auto">
-          <div className="bg-purple-900/30 border border-amber-400/30 rounded-2xl p-6 backdrop-blur-sm">
-            <h2 className="text-xl font-serif text-amber-300 mb-2">Dress Code: Formal</h2>
-            <p className="text-xs text-purple-200 mb-4">La noche brilla con elegancia. Tonos reservados exclusivamente para la quinceañera.</p>
-            <div className="h-4 w-full bg-gradient-to-r from-purple-300 via-amber-200 to-yellow-500 rounded-full mb-2"></div>
-            <p className="text-[11px] text-amber-400/80">Agradecemos evitar el uso de tonos lila claro y dorados idénticos en su vestimenta.</p>
-          </div>
-        </section>
+        {/* Fecha y Contador */}
+        <section className="py-12 px-6 text-center bg-[#F3ECF8]">
+          <h3 className="text-4xl text-[#5A456E] mb-6" style={{ fontFamily: "'Alex Brush', cursive" }}>Enero</h3>
 
-        {/* Trivia */}
-        <section className="py-10 px-4 max-w-md mx-auto">
-          <div className="bg-purple-900/30 border border-amber-400/30 rounded-2xl p-6 backdrop-blur-sm text-center">
-            <h2 className="text-xl font-serif text-amber-300 mb-1">Trivia</h2>
-            <p className="text-xs text-purple-200 mb-4">¿Qué tanto me conoces? — País Soñado</p>
-            <div className="space-y-2 text-left">
-              {['Francia', 'Corea del Sur', 'Italia', 'Todos'].map((op, i) => (
-                <button
-                  key={i}
-                  onClick={() => setTriviaRespuesta(op)}
-                  className={`w-full p-3 rounded-xl border text-sm transition-all ${triviaRespuesta === op ? 'bg-amber-400 text-purple-950 font-bold border-amber-400' : 'bg-purple-950/60 border-amber-400/20 text-amber-100'}`}
-                >
-                  {op}
-                </button>
+          <div className="flex justify-center space-x-3 text-xs mb-6 text-[#5A456E]">
+            <div className="flex flex-col items-center opacity-60"><span className="text-[9px]">LUN</span><span>11</span></div>
+            <div className="flex flex-col items-center opacity-60"><span className="text-[9px]">MAR</span><span>12</span></div>
+            <div className="flex flex-col items-center opacity-60"><span className="text-[9px]">MIÉ</span><span>13</span></div>
+            <div className="flex flex-col items-center opacity-60"><span className="text-[9px]">JUE</span><span>14</span></div>
+            <div className="flex flex-col items-center opacity-60"><span className="text-[9px]">VIE</span><span>15</span></div>
+            <div className="flex flex-col items-center font-bold text-[#2E1F47] bg-[#E5C158] px-2.5 py-1 rounded-xl shadow-sm">
+              <span className="text-[9px]">SÁB</span><span>16</span>
+            </div>
+            <div className="flex flex-col items-center opacity-60"><span className="text-[9px]">DOM</span><span>17</span></div>
+          </div>
+
+          <p className="text-[10px] tracking-widest text-[#3D2C4D] uppercase font-sans mb-1">SÁBADO · 16 DE ENERO DE 2027</p>
+          <p className="text-2xl font-semibold text-[#5A456E] font-sans mb-2">07:00 PM</p>
+          <p className="text-xs italic text-[#7A6282] mb-8">¡Llega puntual para que no te pierdas las sorpresas!</p>
+
+          {/* Tarjeta Contador estilo Princesa */}
+          <div 
+            className="rounded-3xl p-6 max-w-xs mx-auto shadow-xl text-white bg-cover bg-center"
+            style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.9), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=500')` }}
+          >
+            <h4 className="text-2xl text-[#E5C158] mb-4" style={{ fontFamily: "'Alex Brush', cursive" }}>Solo faltan...</h4>
+            <div className="grid grid-cols-4 gap-2 text-center">
+              {[
+                { label: 'DÍAS', val: timeLeft.dias },
+                { label: 'HORAS', val: timeLeft.horas },
+                { label: 'MINUTOS', val: timeLeft.minutos },
+                { label: 'SEGUNDOS', val: timeLeft.segundos }
+              ].map((item, idx) => (
+                <div key={idx} className="bg-white/10 rounded-xl p-2 border border-white/10">
+                  <span className="block text-lg font-bold text-[#E5C158] font-sans">{String(item.val).padStart(2, '0')}</span>
+                  <span className="text-[7px] tracking-wider text-purple-200 uppercase font-sans">{item.label}</span>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Playlist */}
-        <section className="py-10 px-4 max-w-md mx-auto">
-          <div className="bg-purple-900/30 border border-amber-400/30 rounded-2xl p-6 backdrop-blur-sm text-center">
-            <h2 className="text-xl font-serif text-amber-300 mb-1">Playlist</h2>
-            <p className="text-xs text-purple-200 mb-4">¿Qué música recomiendas para la velada?</p>
-            {!playlistEnviada ? (
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  placeholder="Pega el enlace (Spotify, YouTube...)"
-                  value={cancionUrl}
-                  onChange={(e) => setCancionUrl(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-purple-950/80 border border-amber-400/30 text-amber-100 text-sm focus:outline-none"
-                />
-                <button
-                  onClick={() => { if(cancionUrl) setPlaylistEnviada(true); }}
-                  className="w-full py-2.5 rounded-xl bg-amber-400 text-purple-950 font-bold text-sm"
-                >
-                  Recomendar 🎶
-                </button>
-              </div>
-            ) : (
-              <p className="text-amber-300 font-semibold text-sm">¡Gracias por tu recomendación musical!</p>
-            )}
+        {/* Ubicación */}
+        <section className="py-14 px-6 text-center max-w-md mx-auto">
+          <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Ubicación</h3>
+          <div className="w-12 h-0.5 bg-[#E5C158] mx-auto mb-6"></div>
+
+          <h4 className="text-sm font-bold tracking-widest text-[#2E1F47] uppercase font-sans mb-1">CASONA PALMA REAL</h4>
+          <p className="text-[10px] text-[#7A6282] uppercase tracking-widest font-sans mb-6">VALENCIA, CARABOBO</p>
+
+          <a
+            href="https://maps.google.com"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block px-8 py-3 bg-[#5A456E] text-white text-[10px] tracking-widest uppercase font-semibold rounded-full shadow-md font-sans"
+          >
+            VER UBICACIÓN
+          </a>
+        </section>
+
+        {/* Galería */}
+        <section className="py-12 px-6 text-center max-w-md mx-auto">
+          <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Galería</h3>
+          <div className="w-12 h-0.5 bg-[#E5C158] mx-auto mb-6"></div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=500" alt="Foto 1" className="col-span-2 w-full h-52 object-cover rounded-2xl shadow-sm" />
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500" alt="Foto 2" className="w-full h-36 object-cover rounded-2xl shadow-sm" />
+            <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=500" alt="Foto 3" className="w-full h-36 object-cover rounded-2xl shadow-sm" />
           </div>
         </section>
 
-        {/* Asistencia por Mesas */}
-        <section className="py-12 px-4 max-w-md mx-auto">
-          <div className="bg-purple-900/40 border border-amber-400/50 rounded-2xl p-6 backdrop-blur-sm shadow-xl">
-            <h2 className="text-2xl font-serif text-amber-300 text-center mb-2">Asistencia</h2>
-            <p className="text-xs text-purple-200 text-center mb-6">Busca tu apellido para ubicar tu mesa y confirmar.</p>
+        {/* Dress Code */}
+        <section className="py-14 px-6 bg-[#F3ECF8]">
+          <div className="max-w-md mx-auto bg-white rounded-3xl p-6 shadow-sm border border-[#EADBEE] text-center">
+            <h3 className="text-4xl text-[#5A456E] mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Dress code</h3>
+            <p className="text-[10px] tracking-widest text-[#2E1F47] uppercase font-sans font-bold mb-4">SEMI-FORMAL</p>
+            <p className="text-xs italic text-[#7A6282] mb-6">
+              Que las damas brillen con su belleza única y los caballeros con su porte y estilo.
+            </p>
+
+            <p className="text-[9px] tracking-widest uppercase text-[#3D2C4D] font-bold font-sans mb-3">COLORES RESERVADOS</p>
+            <div className="flex justify-center space-x-4 mb-4">
+              <div className="w-9 h-9 rounded-full bg-[#E2D4F0] border-2 border-[#E5C158]"></div>
+              <div className="w-9 h-9 rounded-full bg-[#5A456E] border-2 border-[#E5C158]"></div>
+              <div className="w-9 h-9 rounded-full bg-[#E5C158] border-2 border-white shadow"></div>
+            </div>
+            <p className="text-[10px] italic text-[#7A6282]">
+              Los tonos lila, morado y dorado representan la esencia de mis sueños; les solicitamos gentilmente no utilizarlos.
+            </p>
+          </div>
+        </section>
+
+        {/* Obsequios */}
+        <section className="py-14 px-6 text-center max-w-md mx-auto">
+          <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Obsequios</h3>
+          <p className="text-xs italic text-[#7A6282] mb-4 max-w-xs mx-auto">
+            Mi mayor regalo será tu presencia. Sin embargo, si deseas obsequiarme algo más, una lluvia de sobres será siempre bienvenida.
+          </p>
+          <p className="text-[10px] tracking-widest font-bold text-[#3D2C4D] uppercase font-sans">LLUVIA DE SOBRES</p>
+        </section>
+
+        {/* Asistencia */}
+        <section className="py-14 px-6 bg-[#F3ECF8]">
+          <div className="max-w-md mx-auto bg-white rounded-3xl p-6 shadow-md border border-[#EADBEE] text-center">
+            <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Asistencia</h3>
 
             {!familiaSeleccionada ? (
               <div>
+                <p className="text-xs italic text-[#7A6282] mb-4">
+                  Ingresa tu apellido para encontrar tu invitación:
+                </p>
                 <input
                   type="text"
                   placeholder="Ej. Hernández"
                   value={busqueda}
                   onChange={(e) => setBusqueda(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-purple-950/80 border border-amber-400/30 text-amber-100 text-sm mb-4"
+                  className="w-full p-3 rounded-xl bg-[#FAF6FF] border border-[#EADBEE] text-xs text-[#3D2C4D] focus:outline-none mb-3 font-sans"
                 />
-                {familiasFiltradas.map((fam) => (
-                  <button
-                    key={fam.id}
-                    onClick={() => { setFamiliaSeleccionada(fam); setAsistentesConfirmados(fam.maxCupos); }}
-                    className="w-full text-left p-3 rounded-xl bg-purple-800/60 border border-amber-400/20 mb-2 flex justify-between items-center"
-                  >
-                    <span className="font-semibold text-amber-100">{fam.nombre}</span>
-                    <span className="text-xs text-amber-300 bg-purple-950/80 px-2 py-1 rounded-lg">({fam.maxCupos} p)</span>
-                  </button>
-                ))}
+
+                {familiasFiltradas.length > 0 && (
+                  <div className="space-y-2">
+                    {familiasFiltradas.map((fam) => (
+                      <button
+                        key={fam.id}
+                        onClick={() => { setFamiliaSeleccionada(fam); setAsistentesConfirmados(fam.maxCupos); }}
+                        className="w-full text-left p-3 rounded-xl bg-[#F3ECF8] border border-[#E5C158]/40 flex justify-between items-center"
+                      >
+                        <span className="font-semibold text-xs text-[#2E1F47] font-sans">{fam.nombre}</span>
+                        <span className="text-[9px] bg-[#5A456E] text-white px-2 py-0.5 rounded-full font-sans">
+                          Máx. {fam.maxCupos}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : confirmadoExito ? (
-              <div className="text-center py-6">
-                <h3 className="text-xl font-bold text-amber-300 mb-1">¡Asistencia Confirmada!</h3>
-                <p className="text-sm text-purple-200">Registrados {asistentesConfirmados} lugares para {familiaSeleccionada.nombre}.</p>
+              <div className="py-4">
+                <h4 className="text-lg font-bold text-[#5A456E] font-sans mb-1">¡Asistencia Confirmada!</h4>
+                <p className="text-xs text-[#7A6282]">
+                  Guardamos {asistentesConfirmados} lugar(es) para la <strong>{familiaSeleccionada.nombre}</strong>.
+                </p>
               </div>
             ) : (
               <div>
-                <div className="p-4 rounded-xl bg-purple-950/70 border border-amber-400/30 mb-4 text-center">
-                  <p className="text-sm text-purple-300">Mesa de:</p>
-                  <h3 className="text-xl font-serif text-amber-200 font-bold">{familiaSeleccionada.nombre}</h3>
-                  <p className="text-xs text-amber-400/80 mt-1">Máximo: {familiaSeleccionada.maxCupos} personas</p>
+                <div className="p-3 rounded-xl bg-[#F3ECF8] mb-4">
+                  <p className="text-[9px] uppercase tracking-wider text-[#7A6282] font-sans">INVITACIÓN DE</p>
+                  <h4 className="text-base font-bold text-[#2E1F47] font-sans">{familiaSeleccionada.nombre}</h4>
                 </div>
-                <div className="flex items-center justify-center space-x-4 mb-6">
-                  <button onClick={() => setAsistentesConfirmados(Math.max(1, asistentesConfirmados - 1))} className="w-10 h-10 rounded-xl bg-purple-800 text-amber-200 text-xl font-bold">-</button>
-                  <span className="text-2xl font-bold text-amber-300">{asistentesConfirmados}</span>
-                  <button onClick={() => setAsistentesConfirmados(Math.min(familiaSeleccionada.maxCupos, asistentesConfirmados + 1))} className="w-10 h-10 rounded-xl bg-purple-800 text-amber-200 text-xl font-bold">+</button>
+
+                <p className="text-xs text-[#7A6282] mb-3 font-sans">Asistentes a confirmar:</p>
+                <div className="flex items-center justify-center space-x-4 mb-4">
+                  <button onClick={() => setAsistentesConfirmados(Math.max(1, asistentesConfirmados - 1))} className="w-8 h-8 rounded-full bg-[#5A456E] text-white font-bold font-sans">-</button>
+                  <span className="text-lg font-bold text-[#2E1F47] font-sans">{asistentesConfirmados}</span>
+                  <button onClick={() => setAsistentesConfirmados(Math.min(familiaSeleccionada.maxCupos, asistentesConfirmados + 1))} className="w-8 h-8 rounded-full bg-[#5A456E] text-white font-bold font-sans">+</button>
                 </div>
+
                 <div className="flex space-x-2">
-                  <button onClick={() => setFamiliaSeleccionada(null)} className="w-1/3 py-3 rounded-xl bg-purple-950 text-purple-300 text-xs">Cambiar</button>
-                  <button onClick={enviarAsistencia} disabled={enviando} className="w-2/3 py-3 rounded-xl bg-amber-400 text-purple-950 font-bold text-sm">
-                    {enviando ? 'Guardando...' : 'Confirmar'}
+                  <button onClick={() => setFamiliaSeleccionada(null)} className="w-1/3 py-2.5 rounded-full border text-[10px] uppercase font-sans">Cambiar</button>
+                  <button onClick={enviarAsistencia} disabled={enviando} className="w-2/3 py-2.5 rounded-full bg-[#D4AF37] text-[#2E1F47] font-bold text-[10px] uppercase font-sans shadow-md">
+                    {enviando ? 'Guardando...' : 'Confirmar Aquí'}
                   </button>
                 </div>
               </div>
             )}
           </div>
         </section>
+
+        {/* Sugerir Canción */}
+        <section className="py-12 px-6 max-w-md mx-auto text-center">
+          <h3 className="text-4xl text-[#5A456E] mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Playlist</h3>
+          <p className="text-xs italic text-[#7A6282] mb-4">¿Qué canción no debería faltar en la fiesta?</p>
+          {!playlistEnviada ? (
+            <div className="space-y-2">
+              <input
+                type="text"
+                placeholder="Nombre o link de Spotify / YouTube"
+                value={cancionUrl}
+                onChange={(e) => setCancionUrl(e.target.value)}
+                className="w-full p-3 rounded-xl bg-[#F3ECF8] border border-[#EADBEE] text-xs text-[#3D2C4D] focus:outline-none font-sans"
+              />
+              <button onClick={() => { if(cancionUrl) setPlaylistEnviada(true); }} className="w-full py-2.5 rounded-full bg-[#5A456E] text-white text-[10px] font-sans uppercase font-semibold">
+                Sugerir Canción
+              </button>
+            </div>
+          ) : (
+            <p className="text-xs font-semibold text-[#5A456E]">¡Gracias por tu recomendación!</p>
+          )}
+        </section>
+
+        {/* Cierre */}
+        <footer className="py-12 px-6 text-center bg-[#2E1F47] text-purple-200">
+          <p className="text-xs italic mb-2">¡Los espero para darnos un fuerte abrazo!</p>
+          <h4 className="text-3xl text-[#E5C158] mb-4" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole</h4>
+          <p className="text-[9px] tracking-widest uppercase opacity-60 font-sans">XV AÑOS · NICOLE RIVAS · 16.01.2027</p>
+        </footer>
 
       </div>
     </div>
