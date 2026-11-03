@@ -437,16 +437,17 @@ export default function App() {
             Tu presencia será el detalle perfecto para hacer de esta noche un recuerdo que brillará para siempre.
           </p>
 
-                    <div 
-            onClick={() => setImagenAmpliada("https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800")}
+                              <div 
+            onClick={() => setImagenAmpliada("/quinceañera.jpg")}
             className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative"
           >
             <img 
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800" 
+              src="/quinceañera.jpg" 
               alt="Nicole" 
               className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-105"
             />
           </div>
+          
         </section>
 
         {/* Fecha y Contador */}
