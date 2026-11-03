@@ -362,7 +362,7 @@ export default function App() {
       {/* PÁGINA PRINCIPAL */}
       <div className={`bg-[#FAF6FF] relative ${!isOpen ? 'hidden' : 'block'}`}>
 
-                {/* CABELLO DORADO TIPO TRENZA ENTRELAZADA */}
+        {/* CABELLO DORADO TIPO TRENZA ENTRELAZADA ALINEADO A LA DERECHA */}
         <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
           <svg className="w-full h-full" viewBox="0 0 100 1000" preserveAspectRatio="none">
             <defs>
@@ -377,27 +377,27 @@ export default function App() {
               </filter>
             </defs>
 
-            {/* Sombra de fondo para dar volumen */}
+            {/* Sombra de fondo desplazada a la derecha */}
             <path
-              d="M 42 0 C 48 40, 36 80, 42 120 C 48 160, 36 200, 42 240 C 48 280, 36 320, 42 360 C 48 400, 36 440, 42 480 C 48 520, 36 560, 42 600 C 48 640, 36 680, 42 720 C 48 760, 36 800, 42 840 C 48 880, 36 920, 42 960"
+              d="M 58 0 C 64 40, 52 80, 58 120 C 64 160, 52 200, 58 240 C 64 280, 52 320, 58 360 C 64 400, 52 440, 58 480 C 64 520, 52 560, 58 600 C 64 640, 52 680, 58 720 C 64 760, 52 800, 58 840 C 64 880, 52 920, 58 960"
               fill="none"
               stroke="#5A456E"
               strokeWidth="5"
               opacity="0.2"
             />
 
-            {/* Ramal 1 de la trenza (Onda A) */}
+            {/* Ramal 1 de la trenza (desplazado al eje 58) */}
             <path
-              d="M 42 0 C 50 20, 34 40, 42 60 C 50 80, 34 100, 42 120 C 50 140, 34 160, 42 180 C 50 200, 34 220, 42 240 C 50 260, 34 280, 42 300 C 50 320, 34 340, 42 360 C 50 380, 34 400, 42 420 C 50 440, 34 460, 42 480 C 50 500, 34 520, 42 540 C 50 560, 34 580, 42 600 C 50 620, 34 640, 42 660 C 50 680, 34 700, 42 720 C 50 740, 34 760, 42 780 C 50 800, 34 820, 42 840 C 50 860, 34 880, 42 900 C 50 920, 34 940, 42 960 C 50 980, 34 1000, 42 1020"
+              d="M 58 0 C 66 20, 50 40, 58 60 C 66 80, 50 100, 58 120 C 66 140, 50 160, 58 180 C 66 200, 50 220, 58 240 C 66 260, 50 280, 58 300 C 66 320, 50 340, 58 360 C 66 380, 50 400, 58 420 C 66 440, 50 460, 58 480 C 66 500, 50 520, 58 540 C 66 560, 50 580, 58 600 C 66 620, 50 640, 58 660 C 66 680, 50 700, 58 720 C 66 740, 50 760, 58 780 C 66 800, 50 820, 58 840 C 66 860, 50 880, 58 900 C 66 920, 50 940, 58 960 C 66 980, 50 1000, 58 1020"
               fill="none"
               stroke="url(#goldBraidGrad)"
               strokeWidth="3.5"
               filter="url(#shadowBraid)"
             />
 
-            {/* Ramal 2 de la trenza (Onda B invertida entrelazada) */}
+            {/* Ramal 2 de la trenza entrelazada */}
             <path
-              d="M 42 0 C 34 20, 50 40, 42 60 C 34 80, 50 100, 42 120 C 34 140, 50 160, 42 180 C 34 200, 50 220, 42 240 C 34 260, 50 280, 42 300 C 34 320, 50 340, 42 360 C 34 380, 50 400, 42 420 C 34 440, 50 460, 42 480 C 34 500, 50 520, 42 540 C 34 560, 50 580, 42 600 C 34 620, 50 640, 42 660 C 34 680, 50 700, 42 720 C 34 740, 50 760, 42 780 C 34 800, 50 820, 42 840 C 34 860, 50 880, 42 900 C 34 920, 50 940, 42 960 C 34 980, 50 1000, 42 1020"
+              d="M 58 0 C 50 20, 66 40, 58 60 C 50 80, 66 100, 58 120 C 50 140, 66 160, 58 180 C 50 200, 66 220, 58 240 C 50 260, 66 280, 58 300 C 50 320, 66 340, 58 360 C 50 380, 66 400, 58 420 C 50 440, 66 460, 58 480 C 50 500, 66 520, 58 540 C 50 560, 66 580, 58 600 C 50 620, 66 640, 58 660 C 50 680, 66 700, 58 720 C 50 740, 66 760, 58 780 C 50 800, 66 820, 58 840 C 50 860, 66 880, 58 900 C 50 920, 66 940, 58 960 C 50 980, 66 1000, 58 1020"
               fill="none"
               stroke="#FFF9C4"
               strokeWidth="2"
@@ -405,15 +405,15 @@ export default function App() {
             />
           </svg>
 
-          {/* Flores decorativas intercaladas en los cruces de la trenza */}
-          <div className="absolute top-[8%] left-[40%] text-xs opacity-90 drop-shadow">🌸</div>
-          <div className="absolute top-[22%] left-[42%] text-xs opacity-90 drop-shadow">💜</div>
-          <div className="absolute top-[38%] left-[39%] text-xs opacity-90 drop-shadow">🌸</div>
-          <div className="absolute top-[54%] left-[41%] text-xs opacity-90 drop-shadow">🌼</div>
-          <div className="absolute top-[70%] left-[40%] text-xs opacity-90 drop-shadow">🌸</div>
-          <div className="absolute top-[86%] left-[42%] text-xs opacity-90 drop-shadow">💜</div>
+          {/* Flores decorativas reubicadas en la nueva posición de la trenza */}
+          <div className="absolute top-[8%] left-[56%] text-xs opacity-90 drop-shadow">🌸</div>
+          <div className="absolute top-[22%] left-[58%] text-xs opacity-90 drop-shadow">💜</div>
+          <div className="absolute top-[38%] left-[55%] text-xs opacity-90 drop-shadow">🌸</div>
+          <div className="absolute top-[54%] left-[57%] text-xs opacity-90 drop-shadow">🌼</div>
+          <div className="absolute top-[70%] left-[56%] text-xs opacity-90 drop-shadow">🌸</div>
+          <div className="absolute top-[86%] left-[58%] text-xs opacity-90 drop-shadow">💜</div>
         </div>
-        
+
 
         {/* Cabecera */}
         <section 
