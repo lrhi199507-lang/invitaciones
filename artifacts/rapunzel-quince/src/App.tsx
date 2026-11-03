@@ -221,6 +221,9 @@ export default function App() {
         .lantern-flame {
           animation: flicker 1.8s ease-in-out infinite;
         }
+        .gold-gradient-box {
+          background: linear-gradient(135deg, #f7df85 0%, #d4af37 50%, #aa8222 100%);
+        }
       `}</style>
 
       {/* LINTERNAS FLOTANTES */}
@@ -319,16 +322,16 @@ export default function App() {
       {isOpen && (
         <button
           onClick={toggleAudio}
-          className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-[#5B3E7A] text-[#E5C158] flex items-center justify-center shadow-2xl border border-[#E5C158]/50 backdrop-blur-sm cursor-pointer"
+          className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full gold-gradient-box text-[#4A3462] flex items-center justify-center shadow-2xl border border-white/50 backdrop-blur-sm cursor-pointer"
         >
           {isPlaying ? (
             <span className="flex items-end space-x-0.5 h-4">
-              <span className="w-1 bg-[#E5C158] h-full animate-pulse"></span>
-              <span className="w-1 bg-[#E5C158] h-2/3 animate-pulse delay-75"></span>
-              <span className="w-1 bg-[#E5C158] h-4/5 animate-pulse delay-150"></span>
+              <span className="w-1 bg-[#4A3462] h-full animate-pulse"></span>
+              <span className="w-1 bg-[#4A3462] h-2/3 animate-pulse delay-75"></span>
+              <span className="w-1 bg-[#4A3462] h-4/5 animate-pulse delay-150"></span>
             </span>
           ) : (
-            <span className="text-sm">🎵</span>
+            <span className="text-sm font-bold">🎵</span>
           )}
         </button>
       )}
@@ -355,7 +358,7 @@ export default function App() {
             <div className="w-full pt-4">
               <button
                 onClick={abrirInvitacion}
-                className="w-full py-4 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-[#4A3462] font-bold text-xs tracking-[0.2em] rounded-full shadow-2xl uppercase transition-transform active:scale-95 border border-white/20 cursor-pointer"
+                className="w-full py-4 gold-gradient-box text-[#4A3462] font-bold text-xs tracking-[0.2em] rounded-full shadow-2xl uppercase transition-transform active:scale-95 border border-white/40 cursor-pointer"
               >
                 ABRIR INVITACIÓN
               </button>
@@ -454,15 +457,22 @@ export default function App() {
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center bg-[#F3ECF8]/90 relative z-20">
           <h3 className="text-4xl text-[#5B3E7A] mb-6" style={{ fontFamily: "'Alex Brush', cursive" }}>Enero</h3>
 
-          <div className="flex justify-center space-x-3 text-sm mb-6 text-[#5B3E7A] font-medium">
+          <div className="flex justify-center space-x-3 text-sm mb-6 text-[#5B3E7A] font-medium items-center">
             <div className="flex flex-col items-center opacity-60"><span className="text-[11px]">LUN</span><span className="text-base">11</span></div>
             <div className="flex flex-col items-center opacity-60"><span className="text-[11px]">MAR</span><span className="text-base">12</span></div>
             <div className="flex flex-col items-center opacity-60"><span className="text-[11px]">MIÉ</span><span className="text-base">13</span></div>
             <div className="flex flex-col items-center opacity-60"><span className="text-[11px]">JUE</span><span className="text-base">14</span></div>
             <div className="flex flex-col items-center opacity-60"><span className="text-[11px]">VIE</span><span className="text-base">15</span></div>
-            <div className="flex flex-col items-center font-bold text-[#4A3462] bg-[#E5C158] px-3 py-1.5 rounded-xl shadow-sm">
-              <span className="text-[11px]">SÁB</span><span className="text-lg">16</span>
+
+            {/* Sábado 16 con el dorado idéntico y el pequeño brillo superior */}
+            <div className="flex flex-col items-center relative pt-2">
+              <div className="w-2 h-2 rounded-full bg-[#f7df85] absolute top-0 shadow-[0_0_6px_#d4af37]"></div>
+              <div className="gold-gradient-box text-[#4A3462] px-3.5 py-2 rounded-2xl shadow-md border border-white/60 flex flex-col items-center">
+                <span className="text-[10px] font-bold tracking-wider font-sans">SÁB</span>
+                <span className="text-lg font-bold font-sans">16</span>
+              </div>
             </div>
+
             <div className="flex flex-col items-center opacity-60"><span className="text-[11px]">DOM</span><span className="text-base">17</span></div>
           </div>
 
@@ -588,7 +598,7 @@ export default function App() {
                 </p>
                 <button
                   onClick={reiniciarTrivia}
-                  className="px-6 py-3 bg-[#D4AF37] text-[#4A3462] font-bold text-xs tracking-wider uppercase rounded-full shadow-sm font-sans cursor-pointer"
+                  className="px-6 py-3 gold-gradient-box text-[#4A3462] font-bold text-xs tracking-wider uppercase rounded-full shadow-sm font-sans cursor-pointer"
                 >
                   Volver a Jugar 🔄
                 </button>
@@ -597,7 +607,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* CÓDIGO QR / ÁLBUM DE RECUERDOS */}
+                {/* CÓDIGO QR / ÁLBUM DE RECUERDOS */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 text-center max-w-md mx-auto relative z-20">
           <h3 className="text-4xl text-[#5B3E7A] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Código QR</h3>
           <p className="text-xs tracking-widest text-[#4A3462] uppercase font-sans font-bold mb-2">RECUERDOS DE LA FIESTA</p>
@@ -606,7 +616,7 @@ export default function App() {
           <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-6 shadow-md border border-[#EADBEE] text-center">
             <div className="w-40 h-40 mx-auto mb-4 bg-white p-2 rounded-2xl border border-gray-200 shadow-inner flex items-center justify-center">
               <img 
-                src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://drive.google.com" 
+                src="/qr.jpg" 
                 alt="QR Recuerdos" 
                 className="w-full h-full object-contain"
               />
@@ -618,12 +628,13 @@ export default function App() {
               href="https://drive.google.com" 
               target="_blank" 
               rel="noreferrer"
-              className="inline-block w-full py-3 bg-[#D4AF37] text-[#4A3462] font-bold text-xs tracking-wider uppercase rounded-xl font-sans shadow-sm"
+              className="inline-block w-full py-3 gold-gradient-box text-[#4A3462] font-bold text-xs tracking-wider uppercase rounded-xl font-sans shadow-sm"
             >
               Abrir Álbum en Google Drive
             </a>
           </div>
         </section>
+        
 
         {/* Galería */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto relative z-20">
@@ -660,9 +671,9 @@ export default function App() {
 
             <p className="text-[10px] tracking-widest uppercase text-[#4A3462] font-bold font-sans mb-3">COLORES RESERVADOS</p>
             <div className="flex justify-center space-x-4 mb-4">
-              <div className="w-9 h-9 rounded-full bg-[#E2D4F0] border-2 border-[#E5C158]"></div>
-              <div className="w-9 h-9 rounded-full bg-[#5B3E7A] border-2 border-[#E5C158]"></div>
-              <div className="w-9 h-9 rounded-full bg-[#E5C158] border-2 border-white shadow"></div>
+              <div className="w-9 h-9 rounded-full bg-[#E2D4F0] border-2 border-[#D4AF37]"></div>
+              <div className="w-9 h-9 rounded-full bg-[#5B3E7A] border-2 border-[#D4AF37]"></div>
+              <div className="w-9 h-9 rounded-full gold-gradient-box border-2 border-white shadow"></div>
             </div>
             <p className="text-sm italic text-[#7A6282]">
               Los tonos lila, morado y dorado representan la esencia de mis sueños; les solicitamos gentilmente no utilizarlos.
@@ -746,7 +757,7 @@ export default function App() {
 
                 <div className="flex space-x-2">
                   <button onClick={() => setFamiliaSeleccionada(null)} className="w-1/3 py-3 rounded-full border text-xs uppercase font-sans cursor-pointer">Cambiar</button>
-                  <button onClick={enviarAsistencia} disabled={enviando} className="w-2/3 py-3 rounded-full bg-[#D4AF37] text-[#4A3462] font-bold text-xs uppercase font-sans shadow-md cursor-pointer">
+                  <button onClick={enviarAsistencia} disabled={enviando} className="w-2/3 py-3 rounded-full gold-gradient-box text-[#4A3462] font-bold text-xs uppercase font-sans shadow-md cursor-pointer">
                     {enviando ? 'Guardando...' : 'Confirmar Aquí'}
                   </button>
                 </div>
@@ -783,10 +794,4 @@ export default function App() {
         <footer className="py-12 px-6 text-center bg-[#46285C] text-purple-200 relative z-20">
           <p className="text-sm italic mb-2">¡Los espero para darnos un fuerte abrazo!</p>
           <h4 className="text-3xl text-[#E5C158] mb-4" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole</h4>
-          <p className="text-[10px] tracking-widest uppercase opacity-60 font-sans">XV AÑOS · NICOLE RIVAS · 16.01.2027</p>
-        </footer>
-
-      </div>
-    </div>
-  );
-}
+          <p className="text-[10px] tracking-widest uppercase opacity-60
