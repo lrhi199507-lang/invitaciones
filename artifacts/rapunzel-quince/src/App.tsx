@@ -607,7 +607,7 @@ export default function App() {
           </div>
         </section>
 
-                {/* CÓDIGO QR / ÁLBUM DE RECUERDOS */}
+        {/* CÓDIGO QR / ÁLBUM DE RECUERDOS */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 text-center max-w-md mx-auto relative z-20">
           <h3 className="text-4xl text-[#5B3E7A] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Código QR</h3>
           <p className="text-xs tracking-widest text-[#4A3462] uppercase font-sans font-bold mb-2">RECUERDOS DE LA FIESTA</p>
@@ -634,7 +634,6 @@ export default function App() {
             </a>
           </div>
         </section>
-        
 
         {/* Galería */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto relative z-20">
@@ -794,4 +793,10 @@ export default function App() {
         <footer className="py-12 px-6 text-center bg-[#46285C] text-purple-200 relative z-20">
           <p className="text-sm italic mb-2">¡Los espero para darnos un fuerte abrazo!</p>
           <h4 className="text-3xl text-[#E5C158] mb-4" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole</h4>
-          <p className="text-[10px] tracking-widest uppercase opacity-60
+          <p className="text-[10px] tracking-widest uppercase opacity-60 font-sans">XV AÑOS · NICOLE RIVAS · 16.01.2027</p>
+        </footer>
+
+      </div>
+    </div>
+  );
+}
