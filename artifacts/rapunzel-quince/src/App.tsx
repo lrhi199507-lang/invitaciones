@@ -214,7 +214,7 @@ export default function App() {
         }
       `}</style>
 
-      {/* LINTERNAS FLOTANTES (Menos transparentes y con mayor presencia visual) */}
+      {/* LINTERNAS FLOTANTES (Con mayor presencia visual) */}
       <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
         {[...Array(15)].map((_, i) => (
           <div
@@ -324,14 +324,14 @@ export default function App() {
         </button>
       )}
 
-      {/* PORTADA CON LA TORRE DE RAPUNZEL */}
+      {/* PORTADA CON LA NUEVA TORRE REFERENCIA */}
       {!isOpen && (
         <div 
           className={`fixed inset-0 z-50 flex flex-col items-center justify-center py-12 px-6 text-center bg-cover bg-center transition-all duration-1000 ${
             isOpening ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
           }`}
           style={{ 
-            backgroundImage: `linear-gradient(to bottom, rgba(20, 10, 35, 0.5), rgba(15, 8, 25, 0.85)), url('https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1000')` 
+            backgroundImage: `linear-gradient(to bottom, rgba(30, 18, 48, 0.4), rgba(20, 10, 35, 0.8)), url('/torre.jpg')` 
           }}
         >
           <div className="flex flex-col items-center z-10 max-w-xs w-full space-y-6">
@@ -351,6 +351,10 @@ export default function App() {
                 ABRIR INVITACIÓN
               </button>
             </div>
+
+            <p className="text-[11px] text-purple-200/90 italic font-sans">
+              Al abrirla sonará «Veo en ti la luz», la canción de Rapunzel
+            </p>
           </div>
         </div>
       )}
@@ -396,7 +400,7 @@ export default function App() {
         {/* Cabecera */}
         <section 
           className="py-24 px-6 text-center bg-cover bg-center relative text-white z-20 flex flex-col items-center"
-          style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.75), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1000')` }}
+          style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.6), rgba(46, 31, 71, 0.9)), url('/torre.jpg')` }}
         >
           <p className="text-xs uppercase tracking-[0.25em] text-purple-200 mb-3 font-sans">Estás invitado a celebrar mis</p>
           <h2 className="text-7xl font-bold text-[#E5C158] tracking-widest my-1" style={{ fontFamily: "'Cinzel', serif" }}>XV</h2>
@@ -448,7 +452,7 @@ export default function App() {
 
           <div 
             className="rounded-3xl p-6 max-w-xs mx-auto shadow-xl text-white bg-cover bg-center"
-            style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.9), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=500')` }}
+            style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.9), rgba(46, 31, 71, 0.95)), url('/torre.jpg')` }}
           >
             <h4 className="text-2xl text-[#E5C158] mb-4" style={{ fontFamily: "'Alex Brush', cursive" }}>Solo faltan...</h4>
             <div className="grid grid-cols-4 gap-2 text-center">
