@@ -362,40 +362,58 @@ export default function App() {
       {/* PÁGINA PRINCIPAL */}
       <div className={`bg-[#FAF6FF] relative ${!isOpen ? 'hidden' : 'block'}`}>
 
-        {/* CABELLO DORADO SVG */}
-        <div className="absolute inset-0 pointer-events-none z-5 overflow-hidden">
+                {/* CABELLO DORADO TIPO TRENZA ENTRELAZADA */}
+        <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
           <svg className="w-full h-full" viewBox="0 0 100 1000" preserveAspectRatio="none">
             <defs>
-              <linearGradient id="goldHairReal" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient id="goldBraidGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#FFF59D" />
                 <stop offset="30%" stopColor="#F5B041" />
                 <stop offset="70%" stopColor="#D4AF37" />
                 <stop offset="100%" stopColor="#9A7B0C" />
               </linearGradient>
+              <filter id="shadowBraid" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="1" dy="2" stdDeviation="1" floodColor="#2E1F47" floodOpacity="0.3" />
+              </filter>
             </defs>
 
+            {/* Sombra de fondo para dar volumen */}
             <path
-              d="M 50 0 C 70 80, 20 180, 30 280 C 85 400, 10 520, 45 640 C 85 760, 20 880, 50 1000"
+              d="M 42 0 C 48 40, 36 80, 42 120 C 48 160, 36 200, 42 240 C 48 280, 36 320, 42 360 C 48 400, 36 440, 42 480 C 48 520, 36 560, 42 600 C 48 640, 36 680, 42 720 C 48 760, 36 800, 42 840 C 48 880, 36 920, 42 960"
               fill="none"
-              stroke="url(#goldHairReal)"
-              strokeWidth="4"
-              opacity="0.85"
+              stroke="#5A456E"
+              strokeWidth="5"
+              opacity="0.2"
             />
+
+            {/* Ramal 1 de la trenza (Onda A) */}
             <path
-              d="M 50 0 C 67 83, 23 183, 33 283 C 82 403, 13 523, 48 643 C 82 763, 23 883, 48 1000"
+              d="M 42 0 C 50 20, 34 40, 42 60 C 50 80, 34 100, 42 120 C 50 140, 34 160, 42 180 C 50 200, 34 220, 42 240 C 50 260, 34 280, 42 300 C 50 320, 34 340, 42 360 C 50 380, 34 400, 42 420 C 50 440, 34 460, 42 480 C 50 500, 34 520, 42 540 C 50 560, 34 580, 42 600 C 50 620, 34 640, 42 660 C 50 680, 34 700, 42 720 C 50 740, 34 760, 42 780 C 50 800, 34 820, 42 840 C 50 860, 34 880, 42 900 C 50 920, 34 940, 42 960 C 50 980, 34 1000, 42 1020"
+              fill="none"
+              stroke="url(#goldBraidGrad)"
+              strokeWidth="3.5"
+              filter="url(#shadowBraid)"
+            />
+
+            {/* Ramal 2 de la trenza (Onda B invertida entrelazada) */}
+            <path
+              d="M 42 0 C 34 20, 50 40, 42 60 C 34 80, 50 100, 42 120 C 34 140, 50 160, 42 180 C 34 200, 50 220, 42 240 C 34 260, 50 280, 42 300 C 34 320, 50 340, 42 360 C 34 380, 50 400, 42 420 C 34 440, 50 460, 42 480 C 34 500, 50 520, 42 540 C 34 560, 50 580, 42 600 C 34 620, 50 640, 42 660 C 34 680, 50 700, 42 720 C 34 740, 50 760, 42 780 C 34 800, 50 820, 42 840 C 34 860, 50 880, 42 900 C 34 920, 50 940, 42 960 C 34 980, 50 1000, 42 1020"
               fill="none"
               stroke="#FFF9C4"
-              strokeWidth="1.5"
-              opacity="0.95"
+              strokeWidth="2"
+              opacity="0.9"
             />
           </svg>
 
-          <div className="absolute top-[12%] left-[48%] text-sm opacity-90">🌸</div>
-          <div className="absolute top-[28%] left-[28%] text-sm opacity-90">💜</div>
-          <div className="absolute top-[48%] left-[62%] text-sm opacity-90">🌸</div>
-          <div className="absolute top-[68%] left-[25%] text-sm opacity-90">🌼</div>
-          <div className="absolute top-[88%] left-[48%] text-sm opacity-90">🌸</div>
+          {/* Flores decorativas intercaladas en los cruces de la trenza */}
+          <div className="absolute top-[8%] left-[40%] text-xs opacity-90 drop-shadow">🌸</div>
+          <div className="absolute top-[22%] left-[42%] text-xs opacity-90 drop-shadow">💜</div>
+          <div className="absolute top-[38%] left-[39%] text-xs opacity-90 drop-shadow">🌸</div>
+          <div className="absolute top-[54%] left-[41%] text-xs opacity-90 drop-shadow">🌼</div>
+          <div className="absolute top-[70%] left-[40%] text-xs opacity-90 drop-shadow">🌸</div>
+          <div className="absolute top-[86%] left-[42%] text-xs opacity-90 drop-shadow">💜</div>
         </div>
+        
 
         {/* Cabecera */}
         <section 
