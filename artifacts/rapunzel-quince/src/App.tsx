@@ -364,9 +364,6 @@ export default function App() {
               </button>
             </div>
 
-            <p className="text-[11px] text-purple-200/90 italic font-sans">
-              Al abrirla sonará «Veo en ti la luz», la canción de Rapunzel
-            </p>
           </div>
         </div>
       )}
