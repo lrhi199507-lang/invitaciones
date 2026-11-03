@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { LISTA_INVITADOS, Familia } from './data/invitados';
 
 const GOOGLE_SHEETS_SCRIPT_URL = "AQUI_TU_SCRIPT_URL";
-const AUDIO_URL = "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3"; 
+const AUDIO_URL = "https://docs.google.com/uc?export=download&id=1mJCjtpaJkQO77ixcSG8ZbFiHhh0rHWKz";
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -111,7 +111,12 @@ export default function App() {
   const abrirInvitacion = () => {
     setIsOpening(true);
     if (audioRef.current) {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch((err) => {
+        console.log("Error al reproducir audio:", err);
+      });
     }
     setTimeout(() => {
       setIsOpen(true);
@@ -172,7 +177,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#2E1F47] text-[#3D2C4D] font-serif relative overflow-x-hidden select-none">
-      <audio ref={audioRef} src={AUDIO_URL} loop />
+      <audio ref={audioRef} src={AUDIO_URL} preload="auto" loop />
 
       {/* ESTILOS DE LINTERNAS SUTILES Y ANIMACIONES */}
       <style>{`
@@ -400,7 +405,7 @@ export default function App() {
           <h1 className="text-5xl text-[#E5C158]" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole Rivas</h1>
         </section>
 
-        {/* Texto Emotivo y Foto Principal (Sin texto "Toca para ver") */}
+        {/* Texto Emotivo y Foto Principal */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto relative z-20">
           <p className="text-sm italic leading-relaxed text-[#5A456E] mb-6">
             Toda gran historia tiene una noche especial. Hoy llega el momento de abrir un nuevo capítulo en mi vida y celebrar mis quince años rodeada de las personas que han sido parte de mi camino.
