@@ -628,26 +628,55 @@ export default function App() {
         </section>
         
 
-        {/* Galería */}
-        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto relative z-20">
-          <h3 className="text-4xl text-[#5B3E7A] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Galería</h3>
-          <SeparadorSol />
+        {/* SECCIÓN GALERÍA - 5 FOTICOS */}
+<div className="w-full max-w-md mx-auto px-4 py-8">
+  <h2 className="text-3xl font-serif text-center text-[#5B3E7A] mb-6">Galería</h2>
+  
+  <div className="grid grid-cols-2 gap-4">
+    {/* FOTO 1 */}
+    <div 
+      onClick={() => setImagenAmpliada("/foto1.jpg")}
+      className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative aspect-square"
+    >
+      <img src="/foto1.jpg" alt="Galería 1" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+    </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=500",
-              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500",
-              "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=500"
-            ].map((imgUrl, i) => (
-              <div 
-                key={i} 
-                onClick={() => setImagenAmpliada(imgUrl)}
-                className={`${i === 0 ? 'col-span-2 h-52' : 'h-36'} overflow-hidden rounded-2xl shadow-sm bg-white cursor-pointer relative group`}
-              >
-                <img src={imgUrl} alt={`Foto ${i}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-              </div>
-            ))}
-          </div>
+    {/* FOTO 2 */}
+    <div 
+      onClick={() => setImagenAmpliada("/foto2.jpg")}
+      className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative aspect-square"
+    >
+      <img src="/foto2.jpg" alt="Galería 2" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+    </div>
+
+    {/* FOTO 3 */}
+    <div 
+      onClick={() => setImagenAmpliada("/foto3.jpg")}
+      className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative aspect-square"
+    >
+      <img src="/foto3.jpg" alt="Galería 3" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+    </div>
+
+    {/* FOTO 4 */}
+    <div 
+      onClick={() => setImagenAmpliada("/foto4.jpg")}
+      className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative aspect-square"
+    >
+      <img src="/foto4.jpg" alt="Galería 4" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+    </div>
+  </div>
+
+  {/* FOTO 5 (DESTACADA ABAJO) */}
+  <div className="mt-4">
+    <div 
+      onClick={() => setImagenAmpliada("/foto5.jpg")}
+      className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative aspect-[16/9]"
+    >
+      <img src="/foto5.jpg" alt="Galería 5" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+    </div>
+  </div>
+</div>
+        
         </section>
 
         {/* Dress Code */}
