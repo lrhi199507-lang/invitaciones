@@ -4,7 +4,6 @@ import { LISTA_INVITADOS, Familia } from './data/invitados';
 const GOOGLE_SHEETS_SCRIPT_URL = "AQUI_TU_SCRIPT_URL";
 const AUDIO_URL = "/cancion.mp3";
 
-
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
@@ -180,18 +179,18 @@ export default function App() {
     <div className="min-h-screen bg-[#2E1F47] text-[#3D2C4D] font-serif relative overflow-x-hidden select-none">
       <audio ref={audioRef} src={AUDIO_URL} preload="auto" loop />
 
-      {/* ESTILOS DE LINTERNAS SUTILES Y ANIMACIONES */}
+      {/* ESTILOS DE LINTERNAS Y ANIMACIONES */}
       <style>{`
         @keyframes floatLantern {
           0% {
             transform: translateY(105vh) scale(0.6);
             opacity: 0;
           }
-          20% {
-            opacity: 0.5;
+          15% {
+            opacity: 0.85;
           }
-          80% {
-            opacity: 0.5;
+          85% {
+            opacity: 0.85;
           }
           100% {
             transform: translateY(-110vh) scale(0.9);
@@ -207,15 +206,15 @@ export default function App() {
           transform: translateY(105vh);
         }
         @keyframes flicker {
-          0%, 100% { opacity: 0.5; transform: scale(0.9); }
-          50% { opacity: 0.8; transform: scale(1.1); }
+          0%, 100% { opacity: 0.7; transform: scale(0.9); }
+          50% { opacity: 1; transform: scale(1.1); }
         }
         .lantern-flame {
           animation: flicker 1.8s ease-in-out infinite;
         }
       `}</style>
 
-      {/* BOMBILLITOS FLOTANTES SUTILES Y TRANSPARENTES */}
+      {/* LINTERNAS FLOTANTES (Menos transparentes y con mayor presencia visual) */}
       <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
         {[...Array(15)].map((_, i) => (
           <div
@@ -227,9 +226,9 @@ export default function App() {
               animationDelay: `${(i * 0.8) % 6}s`,
             }}
           >
-            <div className="relative w-6 h-6 rounded-full bg-gradient-to-t from-[#D4AF37]/40 via-[#F3E5AB]/40 to-[#FFF9C4]/40 p-0.5 shadow-[0_0_10px_rgba(255,215,0,0.3)] flex flex-col items-center justify-center border border-white/30 opacity-50">
-              <div className="text-[5px] text-[#5A456E] font-bold opacity-60 mb-0.2">☀️</div>
-              <div className="lantern-flame w-2 h-2 bg-gradient-to-t from-[#FF4500]/70 via-[#FFD700]/70 to-[#FFF]/70 rounded-full shadow-[0_0_6px_#FFD700]"></div>
+            <div className="relative w-6 h-6 rounded-full bg-gradient-to-t from-[#D4AF37]/80 via-[#F3E5AB]/80 to-[#FFF9C4]/90 p-0.5 shadow-[0_0_12px_rgba(255,215,0,0.6)] flex flex-col items-center justify-center border border-white/60 opacity-85">
+              <div className="text-[5px] text-[#5A456E] font-bold opacity-90 mb-0.2">☀️</div>
+              <div className="lantern-flame w-2.5 h-2.5 bg-gradient-to-t from-[#FF4500]/90 via-[#FFD700] to-[#FFF] rounded-full shadow-[0_0_8px_#FFD700]"></div>
             </div>
           </div>
         ))}
@@ -325,14 +324,14 @@ export default function App() {
         </button>
       )}
 
-      {/* PORTADA CASTILLO / TORRE RAPUNZEL */}
+      {/* PORTADA CON LA TORRE DE RAPUNZEL */}
       {!isOpen && (
         <div 
           className={`fixed inset-0 z-50 flex flex-col items-center justify-center py-12 px-6 text-center bg-cover bg-center transition-all duration-1000 ${
             isOpening ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'
           }`}
           style={{ 
-            backgroundImage: `linear-gradient(to bottom, rgba(30, 18, 48, 0.6), rgba(20, 10, 35, 0.85)), url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000')` 
+            backgroundImage: `linear-gradient(to bottom, rgba(20, 10, 35, 0.5), rgba(15, 8, 25, 0.85)), url('https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1000')` 
           }}
         >
           <div className="flex flex-col items-center z-10 max-w-xs w-full space-y-6">
@@ -397,7 +396,7 @@ export default function App() {
         {/* Cabecera */}
         <section 
           className="py-24 px-6 text-center bg-cover bg-center relative text-white z-20 flex flex-col items-center"
-          style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.75), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000')` }}
+          style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.75), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=1000')` }}
         >
           <p className="text-xs uppercase tracking-[0.25em] text-purple-200 mb-3 font-sans">Estás invitado a celebrar mis</p>
           <h2 className="text-7xl font-bold text-[#E5C158] tracking-widest my-1" style={{ fontFamily: "'Cinzel', serif" }}>XV</h2>
@@ -449,7 +448,7 @@ export default function App() {
 
           <div 
             className="rounded-3xl p-6 max-w-xs mx-auto shadow-xl text-white bg-cover bg-center"
-            style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.9), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=500')` }}
+            style={{ backgroundImage: `linear-gradient(to bottom, rgba(46, 31, 71, 0.9), rgba(46, 31, 71, 0.95)), url('https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=500')` }}
           >
             <h4 className="text-2xl text-[#E5C158] mb-4" style={{ fontFamily: "'Alex Brush', cursive" }}>Solo faltan...</h4>
             <div className="grid grid-cols-4 gap-2 text-center">
@@ -609,7 +608,7 @@ export default function App() {
             {[
               "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=500",
               "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500",
-              "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=500"
+              "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?q=80&w=500"
             ].map((imgUrl, i) => (
               <div 
                 key={i} 
