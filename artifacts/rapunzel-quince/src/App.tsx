@@ -29,6 +29,30 @@ export default function App() {
   const [capturaNombre, setCapturaNombre] = useState('');
   const [capturaEnviada, setCapturaEnviada] = useState(false);
 
+  // Estado para la Trivia (3 Preguntas)
+  const [preguntaActual, setPreguntaActual] = useState(0);
+  const [opcionSeleccionada, setOpcionSeleccionada] = useState<number | null>(null);
+  const [respondido, setRespondido] = useState(false);
+  const [aciertos, setAciertos] = useState(0);
+
+  const triviaPreguntas = [
+    {
+      pregunta: "¿Qué país me encantaría visitar?",
+      opciones: ["Australia", "Japón", "España", "Estados Unidos"],
+      correcta: 1 // Japón
+    },
+    {
+      pregunta: "¿Cuál es mi color favorito?",
+      opciones: ["Morado", "Azul", "Rosado", "Negro"],
+      correcta: 2 // Rosado
+    },
+    {
+      pregunta: "¿Cuál es mi comida favorita?",
+      opciones: ["Sushi", "Hamburguesa", "Pizza", "Pasticho"],
+      correcta: 0 // Sushi
+    }
+  ];
+
   // Contador
   const [timeLeft, setTimeLeft] = useState({ dias: 0, horas: 0, minutos: 0, segundos: 0 });
 
@@ -122,6 +146,28 @@ export default function App() {
     } finally {
       setEnviando(false);
     }
+  };
+
+  const seleccionarRespuesta = (index: number) => {
+    if (respondido) return;
+    setOpcionSeleccionada(index);
+    setRespondido(true);
+    if (index === triviaPreguntas[preguntaActual].correcta) {
+      setAciertos(prev => prev + 1);
+    }
+  };
+
+  const siguientePregunta = () => {
+    setOpcionSeleccionada(null);
+    setRespondido(false);
+    setPreguntaActual(prev => prev + 1);
+  };
+
+  const reiniciarTrivia = () => {
+    setPreguntaActual(0);
+    setOpcionSeleccionada(null);
+    setRespondido(false);
+    setAciertos(0);
   };
 
   return (
@@ -273,7 +319,7 @@ export default function App() {
         </button>
       )}
 
-      {/* PORTADA CASTILLO / TORRE RAPUNZEL (CENTRADA Y LIMPIA) */}
+      {/* PORTADA CASTILLO / TORRE RAPUNZEL */}
       {!isOpen && (
         <div 
           className={`fixed inset-0 z-50 flex flex-col items-center justify-center py-12 px-6 text-center bg-cover bg-center transition-all duration-1000 ${
@@ -354,7 +400,7 @@ export default function App() {
           <h1 className="text-5xl text-[#E5C158]" style={{ fontFamily: "'Alex Brush', cursive" }}>Nicole Rivas</h1>
         </section>
 
-        {/* Texto Emotivo y Foto Principal */}
+        {/* Texto Emotivo y Foto Principal (Sin texto "Toca para ver") */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto relative z-20">
           <p className="text-sm italic leading-relaxed text-[#5A456E] mb-6">
             Toda gran historia tiene una noche especial. Hoy llega el momento de abrir un nuevo capítulo en mi vida y celebrar mis quince años rodeada de las personas que han sido parte de mi camino.
@@ -372,7 +418,6 @@ export default function App() {
               alt="Nicole" 
               className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-105"
             />
-            <span className="absolute bottom-3 right-3 bg-[#2E1F47]/70 text-[#E5C158] text-[10px] px-3 py-1 rounded-full backdrop-blur-sm font-sans">🔍 Toca para ver</span>
           </div>
         </section>
 
@@ -433,6 +478,120 @@ export default function App() {
           >
             VER UBICACIÓN
           </a>
+        </section>
+
+        {/* TRIVIA INTERACTIVA */}
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 bg-[#F3ECF8]/90 relative z-20">
+          <div className="max-w-md mx-auto bg-white/95 backdrop-blur-sm rounded-3xl p-6 shadow-md border border-[#EADBEE] text-center">
+            <h3 className="text-4xl text-[#5A456E] mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Trivia</h3>
+            <p className="text-xs tracking-widest text-[#2E1F47] uppercase font-sans font-bold mb-4">¿QUÉ TANTO ME CONOCES?</p>
+
+            {preguntaActual < triviaPreguntas.length ? (
+              <div>
+                <p className="text-[10px] tracking-widest text-[#7A6282] uppercase font-sans mb-2 font-semibold">
+                  PREGUNTA {preguntaActual + 1} DE {triviaPreguntas.length}
+                </p>
+                <h4 className="text-base font-bold text-[#2E1F47] mb-6 font-sans">
+                  {triviaPreguntas[preguntaActual].pregunta}
+                </h4>
+
+                <div className="space-y-3 mb-6">
+                  {triviaPreguntas[preguntaActual].opciones.map((opcion, idx) => {
+                    let btnStyle = "bg-[#FAF6FF] border-[#EADBEE] text-[#3D2C4D]";
+                    if (respondido) {
+                      if (idx === triviaPreguntas[preguntaActual].correcta) {
+                        btnStyle = "bg-green-100 border-green-500 text-green-800 font-bold shadow-sm";
+                      } else if (idx === opcionSeleccionada) {
+                        btnStyle = "bg-red-100 border-red-500 text-red-800";
+                      } else {
+                        btnStyle = "opacity-40 bg-gray-50 border-gray-200";
+                      }
+                    }
+
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => seleccionarRespuesta(idx)}
+                        disabled={respondido}
+                        className={`w-full p-3.5 rounded-xl border text-xs font-sans transition-all cursor-pointer ${btnStyle}`}
+                      >
+                        {opcion}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {respondido && (
+                  <div className="space-y-4">
+                    <div className="p-4 rounded-2xl bg-[#FAF6FF] border border-[#EADBEE]">
+                      {opcionSeleccionada === triviaPreguntas[preguntaActual].correcta ? (
+                        <p className="text-sm font-bold text-green-700 font-sans">
+                          ✨ ¡Qué bien me conoces! Sabía que lo adivinarías.
+                        </p>
+                      ) : (
+                        <p className="text-sm italic text-[#5A456E] font-sans">
+                          🌸 ¡Ups! Casi, pero estás a tiempo de conocerme mucho mejor en esta noche tan especial.
+                        </p>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={siguientePregunta}
+                      className="w-full py-3.5 bg-[#5A456E] text-white text-xs tracking-wider uppercase font-semibold rounded-full shadow-md font-sans cursor-pointer hover:bg-[#48355B] transition-colors"
+                    >
+                      {preguntaActual < triviaPreguntas.length - 1 ? 'Siguiente Pregunta ➔' : 'Ver Resultado Final 🏆'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="py-4 space-y-4">
+                <span className="text-4xl">👑</span>
+                <h4 className="text-xl font-bold text-[#5A456E] font-sans">¡Trivia Completada!</h4>
+                <p className="text-sm text-[#3D2C4D] font-sans">
+                  Acertaste <strong>{aciertos}</strong> de <strong>{triviaPreguntas.length}</strong> preguntas.
+                </p>
+                <p className="text-xs italic text-[#7A6282] max-w-xs mx-auto">
+                  {aciertos === 3 
+                    ? "¡Eres todo un experto en mi vida! Nos vemos pronto para celebrar juntos." 
+                    : "¡Gracias por jugar! Esta noche compartiremos recuerdos inolvidables."}
+                </p>
+                <button
+                  onClick={reiniciarTrivia}
+                  className="px-6 py-3 bg-[#D4AF37] text-[#2E1F47] font-bold text-xs tracking-wider uppercase rounded-full shadow-sm font-sans cursor-pointer"
+                >
+                  Volver a Jugar 🔄
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* CÓDIGO QR / ÁLBUM DE RECUERDOS */}
+        <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 text-center max-w-md mx-auto relative z-20">
+          <h3 className="text-4xl text-[#5A456E] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Código QR</h3>
+          <p className="text-xs tracking-widest text-[#2E1F47] uppercase font-sans font-bold mb-4">RECUERDOS DE LA FIESTA</p>
+
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-6 shadow-md border border-[#EADBEE] text-center">
+            <div className="w-40 h-40 mx-auto mb-4 bg-white p-2 rounded-2xl border border-gray-200 shadow-inner flex items-center justify-center">
+              <img 
+                src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://drive.google.com" 
+                alt="QR Recuerdos" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <p className="text-sm italic text-[#7A6282] mb-4">
+              ¿Hiciste una foto increíble? Súbela aquí escaneando este código y compártela con todos en nuestro álbum digital.
+            </p>
+            <a 
+              href="https://drive.google.com" 
+              target="_blank" 
+              rel="noreferrer"
+              className="inline-block w-full py-3 bg-[#D4AF37] text-[#2E1F47] font-bold text-xs tracking-wider uppercase rounded-xl font-sans shadow-sm"
+            >
+              Abrir Álbum en Google Drive
+            </a>
+          </div>
         </section>
 
         {/* Galería */}
