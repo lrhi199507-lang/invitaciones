@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { LISTA_INVITADOS, Familia } from './data/invitados';
 
 const GOOGLE_SHEETS_SCRIPT_URL = "AQUI_TU_SCRIPT_URL";
-const AUDIO_URL = "https://docs.google.com/uc?export=download&id=1mJCjtpaJkQO77ixcSG8ZbFiHhh0rHWKz";
+const AUDIO_URL = "/cancion.mp3";
+
 
 export default function App() {
   const [isOpen, setIsOpen] = useState(false);
