@@ -607,7 +607,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* CÓDIGO QR / ÁLBUM DE RECUERDOS */}
+                {/* CÓDIGO QR / ÁLBUM DE RECUERDOS */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 text-center max-w-md mx-auto relative z-20">
           <h3 className="text-4xl text-[#5B3E7A] mb-2" style={{ fontFamily: "'Alex Brush', cursive" }}>Código QR</h3>
           <p className="text-xs tracking-widest text-[#4A3462] uppercase font-sans font-bold mb-2">RECUERDOS DE LA FIESTA</p>
@@ -625,7 +625,7 @@ export default function App() {
               ¿Hiciste una foto increíble? Súbela aquí escaneando este código y compártela con todos en nuestro álbum digital.
             </p>
             <a 
-              href="https://drive.google.com" 
+              href="https://drive.google.com/drive/folders/1vXykX5H9VLd-6VN2zgV3HeBQ-Ceemg2r" 
               target="_blank" 
               rel="noreferrer"
               className="inline-block w-full py-3 gold-gradient-box text-[#4A3462] font-bold text-xs tracking-wider uppercase rounded-xl font-sans shadow-sm"
@@ -634,6 +634,7 @@ export default function App() {
             </a>
           </div>
         </section>
+        
 
         {/* Galería */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 text-center max-w-md mx-auto relative z-20">
