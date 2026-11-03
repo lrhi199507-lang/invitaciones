@@ -592,12 +592,7 @@ export default function App() {
                     ? "¡Eres todo un experto en mi vida! Nos vemos pronto para celebrar juntos." 
                     : "¡Gracias por jugar! Esta noche compartiremos recuerdos inolvidables."}
                 </p>
-                <button
-                  onClick={reiniciarTrivia}
-                  className="px-6 py-3 gold-gradient-box text-[#4A3462] font-bold text-xs tracking-wider uppercase rounded-full shadow-sm font-sans cursor-pointer"
-                >
-                  Volver a Jugar 🔄
-                </button>
+  
               </div>
             )}
           </div>
