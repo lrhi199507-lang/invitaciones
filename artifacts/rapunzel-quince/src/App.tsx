@@ -437,7 +437,7 @@ export default function App() {
             Tu presencia será el detalle perfecto para hacer de esta noche un recuerdo que brillará para siempre.
           </p>
 
-          <div 
+                    <div 
             onClick={() => setImagenAmpliada("https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800")}
             className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative"
           >
