@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LISTA_INVITADOS } from "./invitados";
 
-const GOOGLE_SHEETS_SCRIPT_URL = "AQUI_TU_SCRIPT_URL";
+const GOOGLE_SHEETS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxfCmc2UxjeFsZZFFRitKVqWNSlL7uZdoNIHSTeuqSCnyzeTrzaSAj4i82zmKbbO3-z/exec";
 const AUDIO_URL = "/cancion.mp3";
 
 export default function App() {
@@ -717,7 +717,7 @@ export default function App() {
                 </p>
                 <input
                   type="text"
-                  placeholder="Ej. Hernández"
+                  placeholder="Ej. Nombre y Apellido"
                   value={busqueda}
                   onChange={(e) => setBusqueda(e.target.value)}
                   className="w-full p-3.5 rounded-xl bg-[#FAF6FF] border border-[#EADBEE] text-sm text-[#4A3462] focus:outline-none mb-3 font-sans"
