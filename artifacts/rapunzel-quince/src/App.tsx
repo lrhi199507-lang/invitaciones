@@ -628,11 +628,11 @@ export default function App() {
         </section>
         
 
-                {/* SECCIÓN GALERÍA - 5 FOTICOS */}
-        <section className="w-full max-w-md mx-auto px-4 py-8">
-          <h2 className="text-3xl font-serif text-center text-[#5B3E7A] mb-6">Galería</h2>
+                        {/* SECCIÓN GALERÍA - 5 FOTICOS */}
+        <section className="w-full max-w-md mx-auto px-4 py-8 relative z-20">
+          <h2 className="text-3xl font-serif text-center text-[#5B3E7A] mb-6 relative z-10">Galería</h2>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 relative z-10">
             {/* FOTO 1 */}
             <div 
               onClick={() => setImagenAmpliada("/foto1.jpg")}
@@ -666,16 +666,17 @@ export default function App() {
             </div>
           </div>
 
-          {/* FOTO 5 (DESTACADA ABAJO) */}
-          <div className="mt-4">
+          {/* FOTO 5 (DESTACADA ABAJO - SIN RECORTAR) */}
+          <div className="mt-4 relative z-10">
             <div 
               onClick={() => setImagenAmpliada("/foto5.jpg")}
-              className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative aspect-[16/9]"
+              className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative"
             >
-              <img src="/foto5.jpg" alt="Galería 5" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <img src="/foto5.jpg" alt="Galería 5" className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105" />
             </div>
           </div>
         </section>
+        
         
         {/* Dress Code */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-14 px-6 bg-[#F3ECF8]/90 relative z-20">
