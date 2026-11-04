@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LISTA_INVITADOS, Familia } from './data/invitados';
+import { LISTA_INVITADOS } from "./invitados";
 
 const GOOGLE_SHEETS_SCRIPT_URL = "AQUI_TU_SCRIPT_URL";
 const AUDIO_URL = "/cancion.mp3";
