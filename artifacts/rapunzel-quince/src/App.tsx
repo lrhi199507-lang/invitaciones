@@ -754,12 +754,13 @@ export default function App() {
                   <h4 className="text-base font-bold text-[#4A3462] font-sans">{familiaSeleccionada.nombre}</h4>
                 </div>
 
-                <p className="text-sm text-[#7A6282] mb-3 font-sans">Asistentes a confirmar:</p>
+                                <p className="text-sm text-[#7A6282] mb-3 font-sans">Asistentes a confirmar:</p>
                 <div className="flex items-center justify-center space-x-4 mb-4">
                   <button onClick={() => setAsistentesConfirmados(Math.max(1, asistentesConfirmados - 1))} className="w-9 h-9 rounded-full bg-[#5B3E7A] text-white font-bold font-sans cursor-pointer text-base">-</button>
                   <span className="text-lg font-bold text-[#4A3462] font-sans">{asistentesConfirmados}</span>
-                  <button onClick={() => setAsistentesConfirmados(Math.min(familiaSeleccionada.maxCupos, asistentesConfirmados + 1))} className="w-9 h-9 rounded-full bg-[#5B3E7A] text-white font-bold font-sans cursor-pointer text-base">+</button>
+                  <button onClick={() => setAsistentesConfirmados(Math.min(familiaSeleccionada.pases, asistentesConfirmados + 1))} className="w-9 h-9 rounded-full bg-[#5B3E7A] text-white font-bold font-sans cursor-pointer text-base">+</button>
                 </div>
+                
 
                 <div className="flex space-x-2">
                   <button onClick={() => setFamiliaSeleccionada(null)} className="w-1/3 py-3 rounded-full border text-xs uppercase font-sans cursor-pointer">Cambiar</button>
