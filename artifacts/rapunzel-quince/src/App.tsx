@@ -136,9 +136,9 @@ export default function App() {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+                    body: JSON.stringify({
             familia: familiaSeleccionada.nombre,
-            cuposMaximos: familiaSeleccionada.maxCupos,
+            cuposMaximos: familiaSeleccionada.pases, // <--- CAMBIAR AQUÍ
             asistentes: asistentesConfirmados,
             fecha: new Date().toLocaleString()
           })
@@ -728,12 +728,12 @@ export default function App() {
                     {familiasFiltradas.map((fam) => (
                       <button
                         key={fam.id}
-                        onClick={() => { setFamiliaSeleccionada(fam); setAsistentesConfirmados(fam.maxCupos); }}
+                        onClick={() => { setFamiliaSeleccionada(fam); setAsistentesConfirmados(fam.pases); }}
                         className="w-full text-left p-3.5 rounded-xl bg-[#F3ECF8] border border-[#E5C158]/40 flex justify-between items-center cursor-pointer"
                       >
                         <span className="font-semibold text-sm text-[#4A3462] font-sans">{fam.nombre}</span>
                         <span className="text-[10px] bg-[#5B3E7A] text-white px-2.5 py-1 rounded-full font-sans">
-                          Máx. {fam.maxCupos}
+                          Máx. {fam.pases}
                         </span>
                       </button>
                     ))}
