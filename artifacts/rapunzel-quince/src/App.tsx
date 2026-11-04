@@ -628,11 +628,12 @@ export default function App() {
         </section>
         
 
-                        {/* SECCIÓN GALERÍA - 5 FOTICOS */}
+        {/* SECCIÓN GALERÍA - 3 FOTOS */}
         <section className="w-full max-w-md mx-auto px-4 py-8 relative z-20">
           <h2 className="text-3xl font-serif text-center text-[#5B3E7A] mb-6 relative z-10">Galería</h2>
           
-          <div className="grid grid-cols-2 gap-4 relative z-10">
+          {/* FOTO 1 Y FOTO 2 (Arriba en dos columnas) */}
+          <div className="grid grid-cols-2 gap-4 relative z-10 mb-4">
             {/* FOTO 1 */}
             <div 
               onClick={() => setImagenAmpliada("/foto1.jpg")}
@@ -648,34 +649,19 @@ export default function App() {
             >
               <img src="/foto2.jpg" alt="Galería 2" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
             </div>
-
-            {/* FOTO 3 */}
-            <div 
-              onClick={() => setImagenAmpliada("/foto3.jpg")}
-              className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative aspect-square"
-            >
-              <img src="/foto3.jpg" alt="Galería 3" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-            </div>
-
-            {/* FOTO 4 */}
-            <div 
-              onClick={() => setImagenAmpliada("/foto4.jpg")}
-              className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative aspect-square"
-            >
-              <img src="/foto4.jpg" alt="Galería 4" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-            </div>
           </div>
 
-          {/* FOTO 5 (DESTACADA ABAJO - SIN RECORTAR) */}
-          <div className="mt-4 relative z-10">
+          {/* FOTO 3 (Destacada abajo a lo ancho, sin recortes) */}
+          <div className="relative z-10">
             <div 
-              onClick={() => setImagenAmpliada("/foto5.jpg")}
+              onClick={() => setImagenAmpliada("/foto3.jpg")}
               className="rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-white cursor-pointer group relative"
             >
-              <img src="/foto5.jpg" alt="Galería 5" className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105" />
+              <img src="/foto3.jpg" alt="Galería 3" className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105" />
             </div>
           </div>
         </section>
+        
         
         
         {/* Dress Code */}
