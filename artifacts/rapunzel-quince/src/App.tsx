@@ -137,7 +137,7 @@ const [nombreTrivia, setNombreTrivia] = useState('');
     if (!familiaSeleccionada) return;
     setEnviando(true);
     try {
-      if (GOOGLE_SHEETS_SCRIPT_URL !== "AQUI_TU_SCRIPT_URL") {
+      if (GOOGLE_SHEETS_SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbxfCmc2UxjeFsZZFFRitKVqWNSlL7uZdoNIHSTeuqSCnyzeTrzaSAj4i82zmKbbO3-z/exec") {
         await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
