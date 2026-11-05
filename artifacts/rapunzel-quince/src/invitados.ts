@@ -35,6 +35,6 @@ export const LISTA_INVITADOS: Invitado[] = [
   { id: 27, nombre: "Fabiana Castillo", pases: 4, pasesMaximos: 4 },
   { id: 28, nombre: "Maria Guedes", pases: 2, pasesMaximos: 2 },
   { id: 29, nombre: "Ashley Borrero", pases: 3, pasesMaximos: 3 },
-  { id: 30, nombre: "Nicole Sosa", pases: 2, pasesMaximos: 2 } ,
+  { id: 30, nombre: "Nicole Sosa", pases: 2, pasesMaximos: 2 },
     { id: 31, nombre: "Christian Rivas", pases: 1, pasesMaximos: 1 }
 ];
