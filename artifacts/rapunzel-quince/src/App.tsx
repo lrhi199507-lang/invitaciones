@@ -11,7 +11,9 @@ export default function App() {
   const [isOpening, setIsOpening] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
+  
+  
+  
   // Asistencia
   const [busqueda, setBusqueda] = useState('');
   const [familiaSeleccionada, setFamiliaSeleccionada] = useState<Familia | null>(null);
@@ -36,7 +38,9 @@ export default function App() {
   const [opcionSeleccionada, setOpcionSeleccionada] = useState<number | null>(null);
   const [respondido, setRespondido] = useState(false);
   const [aciertos, setAciertos] = useState(0);
-
+const [nombreTrivia, setNombreTrivia] = useState('');
+  const [triviaEnviada, setTriviaEnviada] = useState(false);
+  
   const triviaPreguntas = [
     {
       pregunta: "¿Qué país me encantaría visitar?",
@@ -176,6 +180,56 @@ export default function App() {
     setRespondido(false);
     setAciertos(0);
   };
+
+    const enviarCancion = async () => {
+    if (!cancionUrl.trim()) return;
+    try {
+      if (GOOGLE_SHEETS_SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbxfCmc2UxjeFsZZFFRitKVqWNSlL7uZdoNIHSTeuqSCnyzeTrzaSAj4i82zmKbbO3-z/exec") {
+        await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tipo: "playlist",
+            cancion: cancionUrl,
+            fecha: new Date().toLocaleString()
+          })
+        });
+      }
+      setPlaylistEnviada(true);
+    } catch (e) {
+      console.error(e);
+      alert("Error al sugerir la canción.");
+    }
+  };
+
+    const enviarTrivia = async () => {
+    if (!nombreTrivia.trim()) {
+      alert("Por favor ingresa tu nombre para registrar tu resultado.");
+      return;
+    }
+    try {
+      if (GOOGLE_SHEETS_SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbxfCmc2UxjeFsZZFFRitKVqWNSlL7uZdoNIHSTeuqSCnyzeTrzaSAj4i82zmKbbO3-z/exec") {
+        await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tipo: "trivia",
+            nombre: nombreTrivia,
+            aciertos: aciertos,
+            fecha: new Date().toLocaleString()
+          })
+        });
+      }
+      setTriviaEnviada(true);
+    } catch (e) {
+      console.error(e);
+      alert("Error al guardar el resultado de la trivia.");
+    }
+  };
+  
+  
 
   // Componente reutilizable para el divisor con el Sol de Rapunzel
   const SeparadorSol = () => (
@@ -583,7 +637,7 @@ export default function App() {
                   </div>
                 )}
               </div>
-            ) : (
+                        ) : (
               <div className="py-4 space-y-4">
                 <span className="text-4xl">👑</span>
                 <h4 className="text-xl font-bold text-[#5B3E7A] font-sans">¡Trivia Completada!</h4>
@@ -595,9 +649,32 @@ export default function App() {
                     ? "¡Eres todo un experto en mi vida! Nos vemos pronto para celebrar juntos." 
                     : "¡Gracias por jugar! Esta noche compartiremos recuerdos inolvidables."}
                 </p>
-  
+
+                {!triviaEnviada ? (
+                  <div className="space-y-3 pt-2">
+                    <p className="text-xs text-[#7A6282] font-sans">Ingresa tu nombre para registrar tu resultado:</p>
+                    <input
+                      type="text"
+                      placeholder="Tu Nombre y Apellido"
+                      value={nombreTrivia}
+                      onChange={(e) => setNombreTrivia(e.target.value)}
+                      className="w-full p-3 rounded-xl bg-[#FAF6FF] border border-[#EADBEE] text-sm text-[#4A3462] focus:outline-none font-sans"
+                    />
+                    <button
+                      onClick={enviarTrivia}
+                      className="w-full py-3 bg-[#5B3E7A] text-white text-xs tracking-wider uppercase font-semibold rounded-full shadow-md font-sans cursor-pointer hover:bg-[#4a3163] transition-colors"
+                    >
+                      Guardar mi Resultado 🎁
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-sm font-semibold text-green-700 font-sans pt-2">
+                    ✨ ¡Resultado guardado con éxito!
+                  </p>
+                )}
               </div>
             )}
+            
           </div>
         </section>
 
@@ -775,7 +852,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* Playlist */}
+                {/* Playlist */}
         <section className="reveal opacity-0 translate-y-10 transition-all duration-1000 py-12 px-6 max-w-md mx-auto text-center relative z-20">
           <h3 className="text-4xl text-[#5B3E7A] mb-1" style={{ fontFamily: "'Alex Brush', cursive" }}>Playlist</h3>
           <p className="text-sm italic text-[#7A6282] mb-2">¿Qué canción no debería faltar en la fiesta?</p>
@@ -790,7 +867,10 @@ export default function App() {
                 onChange={(e) => setCancionUrl(e.target.value)}
                 className="w-full p-3.5 rounded-xl bg-[#F3ECF8] border border-[#EADBEE] text-sm text-[#4A3462] focus:outline-none font-sans"
               />
-              <button onClick={() => { if(cancionUrl) setPlaylistEnviada(true); }} className="w-full py-3 rounded-full bg-[#5B3E7A] text-white text-xs font-sans uppercase font-semibold cursor-pointer">
+              <button 
+                onClick={enviarCancion} 
+                className="w-full py-3 rounded-full bg-[#5B3E7A] text-white text-xs font-sans uppercase font-semibold cursor-pointer"
+              >
                 Sugerir Canción
               </button>
             </div>
@@ -798,6 +878,7 @@ export default function App() {
             <p className="text-sm font-semibold text-[#5B3E7A]">¡Gracias por tu recomendación!</p>
           )}
         </section>
+        
 
         {/* Cierre */}
         <footer className="py-12 px-6 text-center bg-[#46285C] text-purple-200 relative z-20">
