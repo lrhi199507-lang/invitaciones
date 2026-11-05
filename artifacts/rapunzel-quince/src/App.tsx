@@ -180,7 +180,7 @@ const [nombreTrivia, setNombreTrivia] = useState('');
     setAciertos(0);
   };
 
-    const enviarCancion = async () => {
+        const enviarCancion = async () => {
     if (!cancionUrl.trim()) return;
     try {
         await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
@@ -193,15 +193,15 @@ const [nombreTrivia, setNombreTrivia] = useState('');
             fecha: new Date().toLocaleString()
           })
         });
-      }
-      setPlaylistEnviada(true);
+        setPlaylistEnviada(true); // <-- ESTA LÍNEA DEBE IR DENTRO DEL TRY
     } catch (e) {
       console.error(e);
       alert("Error al sugerir la canción.");
     }
   };
+  
 
-    const enviarTrivia = async () => {
+        const enviarTrivia = async () => {
     if (!nombreTrivia.trim()) {
       alert("Por favor ingresa tu nombre para registrar tu resultado.");
       return;
@@ -218,8 +218,7 @@ const [nombreTrivia, setNombreTrivia] = useState('');
             fecha: new Date().toLocaleString()
           })
         });
-      }
-      setTriviaEnviada(true);
+        setTriviaEnviada(true); // <-- ESTA LÍNEA DEBE IR DENTRO DEL TRY
     } catch (e) {
       console.error(e);
       alert("Error al guardar el resultado de la trivia.");
