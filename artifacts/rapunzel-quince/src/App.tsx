@@ -3,6 +3,7 @@ import { LISTA_INVITADOS } from "./invitados";
 
 const GOOGLE_SHEETS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxfCmc2UxjeFsZZFFRitKVqWNSlL7uZdoNIHSTeuqSCnyzeTrzaSAj4i82zmKbbO3-z/exec";
 
+
 const AUDIO_URL = "/cancion.mp3";
 
 export default function App() {
