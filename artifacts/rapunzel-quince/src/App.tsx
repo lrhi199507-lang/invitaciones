@@ -133,23 +133,21 @@ const [nombreTrivia, setNombreTrivia] = useState('');
     f.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  const enviarAsistencia = async () => {
+    const enviarAsistencia = async () => {
     if (!familiaSeleccionada) return;
     setEnviando(true);
     try {
-      if (GOOGLE_SHEETS_SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbxfCmc2UxjeFsZZFFRitKVqWNSlL7uZdoNIHSTeuqSCnyzeTrzaSAj4i82zmKbbO3-z/exec") {
-        await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-            familia: familiaSeleccionada.nombre,
-            cuposMaximos: familiaSeleccionada.pases, // <--- CAMBIAR AQUÍ
-            asistentes: asistentesConfirmados,
-            fecha: new Date().toLocaleString()
-          })
-        });
-      }
+      await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          familia: familiaSeleccionada.nombre,
+          cuposMaximos: familiaSeleccionada.pases,
+          asistentes: asistentesConfirmados,
+          fecha: new Date().toLocaleString()
+        })
+      });
       setConfirmadoExito(true);
     } catch (e) {
       console.error(e);
@@ -158,6 +156,7 @@ const [nombreTrivia, setNombreTrivia] = useState('');
       setEnviando(false);
     }
   };
+  
 
   const seleccionarRespuesta = (index: number) => {
     if (respondido) return;
@@ -184,7 +183,6 @@ const [nombreTrivia, setNombreTrivia] = useState('');
     const enviarCancion = async () => {
     if (!cancionUrl.trim()) return;
     try {
-      if (GOOGLE_SHEETS_SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbxfCmc2UxjeFsZZFFRitKVqWNSlL7uZdoNIHSTeuqSCnyzeTrzaSAj4i82zmKbbO3-z/exec") {
         await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
@@ -209,7 +207,6 @@ const [nombreTrivia, setNombreTrivia] = useState('');
       return;
     }
     try {
-      if (GOOGLE_SHEETS_SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbxfCmc2UxjeFsZZFFRitKVqWNSlL7uZdoNIHSTeuqSCnyzeTrzaSAj4i82zmKbbO3-z/exec") {
         await fetch(GOOGLE_SHEETS_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
