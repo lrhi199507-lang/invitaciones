@@ -20,8 +20,8 @@ export const LISTA_INVITADOS: Invitado[] = [
   { id: 12, nombre: "Maribel Mendoza", pases: 6, pasesMaximos: 6 },
   { id: 13, nombre: "Leticia Tovar", pases: 3, pasesMaximos: 3 },
   { id: 14, nombre: "Ramon Rivas", pases: 2, pasesMaximos: 2 },
-  { id: 15, nombre: "Yubreska", pases: 2, pasesMaximos: 2 },
-  { id: 16, nombre: "Nelsi", pases: 2, pasesMaximos: 2 },
+  { id: 15, nombre: "Yubreska Pandares", pases: 2, pasesMaximos: 2 },
+  { id: 16, nombre: "Nelsi Aguirre", pases: 2, pasesMaximos: 2 },
   { id: 17, nombre: "Brisaida Marquez", pases: 3, pasesMaximos: 3 },
   { id: 18, nombre: "Fredery Sanchez", pases: 2, pasesMaximos: 2 },
   { id: 19, nombre: "Soide Vegas", pases: 2, pasesMaximos: 2 },
@@ -36,5 +36,6 @@ export const LISTA_INVITADOS: Invitado[] = [
   { id: 28, nombre: "Maria Guedes", pases: 2, pasesMaximos: 2 },
   { id: 29, nombre: "Ashley Borrero", pases: 3, pasesMaximos: 3 },
   { id: 30, nombre: "Nicole Sosa", pases: 2, pasesMaximos: 2 },
-    { id: 31, nombre: "Christian Rivas", pases: 1, pasesMaximos: 1 }
+    { id: 31, nombre: "Christian Rivas", pases: 1, pasesMaximos: 1 },
+    { id: 32, nombre: "Grisel Calderón", pases: 1, pasesMaximos: 1 }
 ];
